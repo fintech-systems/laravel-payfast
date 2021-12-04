@@ -1,13 +1,13 @@
 <?php
 
-namespace FintechSystems\WhmcsApi\Facades;
+namespace FintechSystems\Payfast\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class WhmcsApi extends Facade
+class Payfast extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'whmcs-api';
+        return 'payfast';
     }
 }

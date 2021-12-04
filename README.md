@@ -1,4 +1,4 @@
-# Technology API
+# Laravel PayFast
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/fintech-systems/packagist-boilerplate) [![Build Status](https://app.travis-ci.com/fintech-systems/packagist-boilerplate.svg?branch=main)](https://app.travis-ci.com/fintech-systems/packagist-boilerplate) ![GitHub](https://img.shields.io/github/license/fintech-systems/packagist-boilerplate)
 
 A Technology API designed to run standalone or part of a Laravel Application
@@ -6,14 +6,15 @@ A Technology API designed to run standalone or part of a Laravel Application
 Requirements:
 
 - PHP 8.0
-- Technology
+- Laravel
+- It works with the PayFast sandbox if you don't have an account
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
+composer require fintech-systems/laravel-payfast
 ```
 
 # Usage
@@ -23,7 +24,7 @@ composer require :vendor_slug/:package_slug
 ```php
 <?php
 
-use VendorName\Api\Technology;
+use FintechSystems\Payfast;
 
 require 'vendor/autoload.php';
 
@@ -45,7 +46,7 @@ $result = $api->getInformation();
 
 You can publish the config file with:
 ```bash
-php artisan vendor:publish --provider="VendorName\Skeleton\SkeletonServiceProvider" --tag=":package_slug-config"
+php artisan vendor:publish --provider="FintechSystems\PayFast\PayFastServiceProvider" --tag="laravel-payfast-config"
 ```
 
 # Features
@@ -123,7 +124,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [Eugene van der Merwe](https://github.com/fintech-systems)
 - [All Contributors](../../contributors)
 
 ## License
