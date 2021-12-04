@@ -1,13 +1,13 @@
 # Laravel PayFast
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/fintech-systems/packagist-boilerplate) [![Build Status](https://app.travis-ci.com/fintech-systems/packagist-boilerplate.svg?branch=main)](https://app.travis-ci.com/fintech-systems/packagist-boilerplate) ![GitHub](https://img.shields.io/github/license/fintech-systems/packagist-boilerplate)
 
-A Technology API designed to run standalone or part of a Laravel Application
+A PayFast API designed to run standalone or part of a Laravel Application
 
 Requirements:
 
 - PHP 8.0
 - Laravel
-- It works with the PayFast sandbox if you don't have an account
+- A PayFast account
 
 ## Installation
 
@@ -17,63 +17,22 @@ You can install the package via composer:
 composer require fintech-systems/laravel-payfast
 ```
 
-# Usage
-
-## Framework Agnostic PHP
-
-```php
-<?php
-
-use FintechSystems\Payfast;
-
-require 'vendor/autoload.php';
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
-
-$server = [
-    'api_url'        => $_ENV['TECHNOLOGY_API_URL'],
-    'api_key'        => $_ENV['TECHNOLOGY_API_KEY'],
-    'api_secret'     => $_ENV['TECHNOLOGY_API_SECRET'],
-];
-
-$api = new Technology($server);
-
-$result = $api->getInformation();
-```
-
-## Laravel Installation
+## Publish Laravel configuration
 
 You can publish the config file with:
 ```bash
-php artisan vendor:publish --provider="FintechSystems\PayFast\PayFastServiceProvider" --tag="laravel-payfast-config"
+php artisan vendor:publish --provider="FintechSystems\Payfast\PayfastServiceProvider" --tag="payfast-config"
 ```
 
-# Features
-
-## Feature 1
-
-Framework Agnostic PHP:
+## Usage
 
 ```php
-$newRecord = ['test1', 'test2'];
+use FintechSystems\Payfast\Facades\Payfast;
 
-$api = new Technology;
-$api->post($test);
+Route::get('/payment', function() {
+    return Payfast::payment(5,'Order #1');
+});
 ```
-
-Laravel App:
-
-
-```php
-$newRecord = ['test1', 'test2'];
-
-Technology::post($newRecord);
-```
-
-Expected result:
-
-A new record is added.
 
 ## Testing
 
