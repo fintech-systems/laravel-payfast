@@ -29,3 +29,6 @@ Homestead.json
 /build/
 coverage.xml
 /.idea
+
+#*.example.json
+#*.example.php

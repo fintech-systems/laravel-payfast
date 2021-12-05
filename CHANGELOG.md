@@ -2,12 +2,15 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
-## 0.0.2 - 2021-11-07
+## 0.0.2 - 2021-12-05
 
-- added to this change log as this biolerplate needs a few minor updates in terms of name spacing
-- copied configure.php from the Spatie package laravel-payfast https://github.com/spatie/package-laravel-payfast-laravel
--- this is so that we can start to prepare to use it
+- ability to create a new ad-hoc subscription with any amount
+- ability to cancel a subscription
+- copied many of the Laravel Paddle tests and made them work
+- foundation jetstream block to show subscription information
+- ability to create a new ad-hoc subscription with R 0 amount
+- pay button generation
 
-## 0.0.1 - 202X-XX-XX
+## 0.0.1 - 2021-12-03
 
 - initial release
