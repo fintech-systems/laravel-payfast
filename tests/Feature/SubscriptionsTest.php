@@ -25,10 +25,9 @@ class SubscriptionsTest extends FeatureTestCase
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'payfast_id' => 244,
-            'payfast_plan' => 2323,
-            'payfast_status' => Subscription::STATUS_ACTIVE,            
-            'quantity' => 1,
+            'token' => 244,
+            'plan_id' => 2323,            
+            'status' => Subscription::STATUS_ACTIVE,
         ]);
 
         $this->assertTrue($billable->subscribed('main'));
@@ -52,7 +51,7 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_they_are_on_a_generic_trial()
     {
-        $billable = $this->createBillable('taylor', ['trial_ends_at' => Carbon::tomorrow()]);
+        $billable = $this->createBillable('eugene', ['trial_ends_at' => Carbon::tomorrow()]);
 
         $this->assertTrue($billable->onGenericTrial());
         $this->assertTrue($billable->onTrial());
@@ -66,10 +65,9 @@ class SubscriptionsTest extends FeatureTestCase
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'payfast_id' => 244,
-            'payfast_plan' => 2323,
-            'payfast_status' => Subscription::STATUS_TRIALING,
-            'quantity' => 1,
+            'token' => 244,
+            'plan_id' => 2323,            
+            'status' => Subscription::STATUS_TRIALING,
             'trial_ends_at' => Carbon::tomorrow(),
         ]);
 
@@ -101,10 +99,9 @@ class SubscriptionsTest extends FeatureTestCase
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'payfast_id' => 244,
-            'payfast_plan' => 2323,
-            'payfast_status' => Subscription::STATUS_DELETED,
-            'quantity' => 1,
+            'token' => 244,
+            'plan_id' => 2323,            
+            'status' => Subscription::STATUS_CANCELLED,
             'ends_at' => Carbon::tomorrow(),
         ]);
 
@@ -120,14 +117,13 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_the_grace_period_is_over()
     {
-        $billable = $this->createBillable('taylor');
+        $billable = $this->createBillable('eugene');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'payfast_id' => 244,
-            'payfast_plan' => 2323,
-            'payfast_status' => Subscription::STATUS_DELETED,
-            'quantity' => 1,
+            'token' => 244,
+            'plan_id' => 2323,
+            'status' => Subscription::STATUS_CANCELLED,            
             'ends_at' => Carbon::yesterday(),
         ]);
 
@@ -143,14 +139,13 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_the_subscription_is_paused()
     {
-        $billable = $this->createBillable('taylor');
+        $billable = $this->createBillable('eugene');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'payfast_id' => 244,
-            'payfast_plan' => 2323,
-            'payfast_status' => Subscription::STATUS_PAUSED,
-            'quantity' => 1,
+            'token' => 244,
+            'plan_id' => 2323,
+            'status' => Subscription::STATUS_PAUSED,            
         ]);
 
         $this->assertFalse($subscription->valid());
@@ -169,10 +164,9 @@ class SubscriptionsTest extends FeatureTestCase
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'payfast_id' => 244,
-            'payfast_plan' => 2323,
-            'payfast_status' => Subscription::STATUS_ACTIVE,
-            'quantity' => 1,
+            'token' => 244,
+            'plan_id' => 2323,
+            'status' => Subscription::STATUS_ACTIVE,            
             'paused_from' => Carbon::tomorrow(),
         ]);
 

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use DateTimeInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Paddle\Concerns\Prorates;
+use FintechSystems\Payfast\Concerns\Prorates;
 use LogicException;
 
 /**
@@ -14,13 +14,16 @@ use LogicException;
  */
 class Subscription extends Model
 {
-    // use Prorates;
-
-    const STATUS_ACTIVE = 'COMPLETE';
+    use Prorates;
+    
+    const STATUS_ACTIVE = 'active';
     const STATUS_TRIALING = 'trialing';
     const STATUS_PAST_DUE = 'past_due';
     const STATUS_PAUSED = 'paused';
-    const STATUS_DELETED = 'CANCELLED';
+    const STATUS_CANCELLED = 'cancelled';
+
+    const PAYMENT_STATUS_COMPLETE = 'COMPLETE';
+    const PAYMENT_STATUS_CANCELLED = 'CANCELLED';
 
     /**
      * The attributes that are not mass assignable.
@@ -35,9 +38,9 @@ class Subscription extends Model
      * @var array
      */
     protected $casts = [
-        'pastfast_id' => 'string',
-        'payfast_plan' => 'integer',
-        'quantity' => 'integer',
+        'token' => 'string',
+        'plan_id' => 'integer',
+        'next_bill_at' => 'datetime',
         'trial_ends_at' => 'datetime',
         'paused_from' => 'datetime',
         'ends_at' => 'datetime',
@@ -67,7 +70,7 @@ class Subscription extends Model
      */
     public function receipts()
     {
-        return $this->hasMany(Cashier::$receiptModel, 'payfast_subscription_id', 'payfast_id')->orderByDesc('created_at');
+        return $this->hasMany(Cashier::$receiptModel, 'payfast_token', 'token')->orderByDesc('created_at');
     }
 
     /**
@@ -78,7 +81,7 @@ class Subscription extends Model
      */
     public function hasPlan($plan)
     {
-        return $this->payfast_plan == $plan;
+        return $this->plan_id == $plan;
     }
 
     /**
@@ -99,8 +102,8 @@ class Subscription extends Model
     public function active()
     {
         return (is_null($this->ends_at) || $this->onGracePeriod() || $this->onPausedGracePeriod()) &&
-            (! Cashier::$deactivatePastDue || $this->payfast_status !== self::STATUS_PAST_DUE) &&
-            $this->payfast_status !== self::STATUS_PAUSED;
+            (! Cashier::$deactivatePastDue || $this->status !== self::STATUS_PAST_DUE) &&
+            $this->status !== self::STATUS_PAUSED;
     }
 
     /**
@@ -119,10 +122,10 @@ class Subscription extends Model
                 ->orWhere(function ($query) {
                     $query->onPausedGracePeriod();
                 });
-        })->where('payfast_status', '!=', self::STATUS_PAUSED);
+        })->where('status', '!=', self::STATUS_PAUSED);
 
         if (Cashier::$deactivatePastDue) {
-            $query->where('payfast_status', '!=', self::STATUS_PAST_DUE);
+            $query->where('status', '!=', self::STATUS_PAST_DUE);
         }
     }
 
@@ -133,7 +136,7 @@ class Subscription extends Model
      */
     public function pastDue()
     {
-        return $this->payfast_status === self::STATUS_PAST_DUE;
+        return $this->status === self::STATUS_PAST_DUE;
     }
 
     /**
@@ -144,7 +147,7 @@ class Subscription extends Model
      */
     public function scopePastDue($query)
     {
-        $query->where('payfast_status', self::STATUS_PAST_DUE);
+        $query->where('status', self::STATUS_PAST_DUE);
     }
 
     /**
@@ -175,7 +178,7 @@ class Subscription extends Model
      */
     public function paused()
     {
-        return $this->payfast_status === self::STATUS_PAUSED;
+        return $this->status === self::STATUS_PAUSED;
     }
 
     /**
@@ -186,7 +189,7 @@ class Subscription extends Model
      */
     public function scopePaused($query)
     {
-        $query->where('payfast_status', self::STATUS_PAUSED);
+        $query->where('status', self::STATUS_PAUSED);
     }
 
     /**
@@ -197,7 +200,7 @@ class Subscription extends Model
      */
     public function scopeNotPaused($query)
     {
-        $query->where('payfast_status', '!=', self::STATUS_PAUSED);
+        $query->where('status', '!=', self::STATUS_PAUSED);
     }
 
     /**
@@ -484,14 +487,14 @@ class Subscription extends Model
      */
     public function pause()
     {
-        $this->updatePaddleSubscription([
+        $this->updatePayfastSubscription([
             'pause' => true,
         ]);
 
         $info = $this->payfastInfo();
 
         $this->forceFill([
-            'payfast_status' => $info['state'],
+            'status' => $info['state'],
             'paused_from' => Carbon::createFromFormat('Y-m-d H:i:s', $info['paused_from'], 'UTC'),
         ])->save();
 
@@ -512,7 +515,7 @@ class Subscription extends Model
         ]);
 
         $this->forceFill([
-            'payfast_status' => self::STATUS_ACTIVE,
+            'status' => self::STATUS_ACTIVE,
             'ends_at' => null,
             'paused_from' => null,
         ])->save();
@@ -573,9 +576,7 @@ class Subscription extends Model
             'subscription_id' => $this->paddle_id,
         ], $this->billable->paddleOptions()));
 
-        return collect($result['response'])->map(function (array $modifier) {
-            return new Modifier($this, $modifier);
-        });
+        return collect($result['response'])->map(fn(array $modifier) => new Modifier($this, $modifier));
     }
 
     /**
@@ -586,9 +587,7 @@ class Subscription extends Model
      */
     public function modifier($id)
     {
-        return $this->modifiers()->first(function (Modifier $modifier) use ($id) {
-            return $modifier->id() === $id;
-        });
+        return $this->modifiers()->first(fn(Modifier $modifier) => $modifier->id() === $id);
     }
 
     /**
@@ -640,7 +639,7 @@ class Subscription extends Model
         Cashier::post('/subscription/users_cancel', $payload);
 
         $this->forceFill([
-            'payfast_status' => self::STATUS_DELETED,
+            'status' => self::STATUS_CANCELLED,
             'ends_at' => $endsAt,
         ])->save();
 
@@ -692,7 +691,7 @@ class Subscription extends Model
      *
      * @return string
      */
-    public function paddleEmail()
+    public function payfastEmail()
     {
         return (string) $this->payfastInfo()['user_email'];
     }
@@ -738,7 +737,7 @@ class Subscription extends Model
     }
 
     /**
-     * Get raw information about the subscription from Paddle.
+     * Get raw information about the subscription from Payfast.
      *
      * @return array
      */
@@ -778,5 +777,17 @@ class Subscription extends Model
         if ($this->pastDue()) {
             throw new LogicException("Cannot $action for past due subscriptions.");
         }
+    }
+
+    /**
+     * PayFast frequencies
+     */
+    public static function frequencies($frequency) {
+        return match ($frequency) {
+            3 => 'Monthly',
+            4 => 'Quarterly',
+            5 => 'Biannually',
+            6 => 'Annual'
+        };
     }
 }

@@ -32,7 +32,8 @@
         "illuminate/contracts": "^8.37",
         "payfast/payfast-php-sdk": "^1.1",
         "spatie/ray": "^1.32",
-        "livewire/livewire": "^2.8"
+        "livewire/livewire": "^2.8",
+        "moneyphp/money": "^4.0"
     },
     "require-dev": {  
         "nunomaduro/collision": "^5.3",      

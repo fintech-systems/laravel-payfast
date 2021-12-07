@@ -3,7 +3,7 @@
 namespace FintechSystems\Payfast;
 
 use Illuminate\Support\Facades\Http;
-use Laravel\Paddle\Exceptions\PaddleException;
+use FintechSystems\Payfast\Exceptions\PayfastException;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
@@ -134,7 +134,7 @@ class Cashier
         $response = Http::$method($uri, $payload);
 
         if ($response['success'] === false) {
-            throw new PaddleException($response['error']['message'], $response['error']['code']);
+            throw new PayfastException($response['error']['message'], $response['error']['code']);
         }
 
         return $response;

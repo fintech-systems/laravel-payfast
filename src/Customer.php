@@ -5,7 +5,7 @@ namespace FintechSystems\Payfast;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property \Laravel\Paddle\Billable $billable
+ * @property \FintechSystems\Payfast\Billable $billable
  */
 class Customer extends Model
 {

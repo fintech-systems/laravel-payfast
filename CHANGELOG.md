@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.0.3 - 2021-12-07
+
+- refactored webhooks
+- all tests passing for the first time
+
 ## 0.0.2 - 2021-12-05
 
 - ability to create a new ad-hoc subscription with any amount

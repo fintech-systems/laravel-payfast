@@ -4,7 +4,7 @@ namespace FintechSystems\Payfast\Exceptions;
 
 use Exception;
 
-class InvalidPassthroughPayload extends Exception
+class MissingSubscriptionToken extends Exception
 {
     //
 }

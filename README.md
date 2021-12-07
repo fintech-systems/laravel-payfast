@@ -3,6 +3,8 @@
 
 A PayFast API designed to run standalone or part of a Laravel Application
 
+** THIS IS PRE-RELEASE SOFTWARE **
+
 Requirements:
 
 - PHP 8.0
@@ -50,12 +52,24 @@ Route::get('/payment', function() {
     return Payfast::payment(5,'Order #1');
 });
 
-Route::get('/create-token', function() {
-    return Payfast::createToken(5);
+Route::get('/cancel-subscription', function() {
+    return Payfast::cancelSubscription('73d2a218-695e-4bb5-9f62-383e53bef68f');
 });
 
-Route::get('/cancel-subscription', function() {
-    return Payfast::cancelSubscription('0581fff3-2f69-4b89-827e-6057c76893cc');
+Route::get('/create-subscription', function() {
+    return Payfast::createSubscription(
+        Carbon::now()->addDay()->format('Y-m-d'),
+        5, // Amount
+        6 // Frequency (6 = annual, 3 = monthly)
+    );
+});
+
+Route::get('/create-adhoc-token', function() {
+    return Payfast::createAdhocToken(5);
+});
+
+Route::get('/fetch-subscription', function() {
+    return Payfast::fetchSubscription('21189d52-12eb-4108-9c0e-53343c7ac692');
 });
 
 Route::get('/update-card', function() {

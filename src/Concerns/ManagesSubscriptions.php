@@ -124,10 +124,8 @@ trait ManagesSubscriptions
     public function onPlan($plan)
     {
         return ! is_null($this->subscriptions()
-            ->where('payfast_plan', $plan)
+            ->where('plan_id', $plan)
             ->get()
-            ->first(function (Subscription $subscription) {
-                return $subscription->valid();
-            }));
+            ->first(fn(Subscription $subscription) => $subscription->valid()));
     }
 }
