@@ -2,6 +2,7 @@
 
 namespace FintechSystems\Payfast;
 
+use Carbon\Carbon;
 use PayFast\PayFastApi;
 use PayFast\PayFastPayment;
 use FintechSystems\Payfast\Order;
@@ -13,10 +14,9 @@ class Payfast implements PaymentGateway
     private $payment;
 
     private $returnUrl;
-
     private $cancelUrl;
-
     private $notifyUrl;
+    private $urlCollection;
 
     private $cardUpdateLinkCss;
 
@@ -43,10 +43,13 @@ class Payfast implements PaymentGateway
         );
 
         $this->returnUrl = $client['return_url'];
-
         $this->cancelUrl = $client['cancel_url'];
-
         $this->notifyUrl = $client['notify_url'];
+        $this->urlCollection = [
+            'return_url' => $this->returnUrl,
+            'cancel_url' => $this->cancelUrl,
+            'notify_url' => $this->notifyUrl,
+        ];
 
         $this->cardUpdateLinkCss = $client['card_update_link_css'];
 
@@ -63,52 +66,81 @@ class Payfast implements PaymentGateway
     /**
      * Create a new subscription     
      */
-    public function createSubscription($billingDate, $recurringAmount, $frequency, $cycles = 0)
-    {
-        $recurringType = Subscription::frequencies($frequency);
-
-        $planId = match ($frequency) {
-            6 => 1,
-            3 => 2,
-        };
-
-        $order = Order::create([
-            'billable_id' => Auth::user()->getKey(),
-            'billable_type' => Auth::user()->getMorphClass(),
-        ]);
-        
-        $data = [
-            'custom_str1' => 'subscription',
-            'm_payment_id' => $order->id,
+    public function createSubscription($frequency, $recurringAmount, $initialAmount = 0, $billingDate = null, $cycles = 0)
+    {                           
+        $data = [            
             'subscription_type' => 1,
-            'amount' => $recurringAmount + 1,
+            'm_payment_id' => Order::generate(),            
+            'amount' => $initialAmount,
             'recurring_amount' => $recurringAmount,
-            'billing_date' => $billingDate,
+            'billing_date' => $billingDate ?? Carbon::now()->format('Y-m-d'),
             'frequency' => $frequency,
             'cycles' => $cycles,
-
-            'custom_int1' => Auth::user()->getKey(),
-            'custom_str1' => Auth::user()->getMorphClass(),
-
-            'custom_int2' => $planId,
-            'custom_str2' => config('payfast.plans')[$planId],
+            'custom_str1' => Auth::user()->getMorphClass(),            
+            'custom_int1' => Auth::user()->getKey(),            
+            'custom_int2' => $frequency,
+            'custom_str2' => config('payfast.plans')[$frequency]['name'],
                         
-            'item_name' => config('app.name') . " $recurringType Subscription",
+            'item_name' => config('app.name') . Subscription::frequencies($frequency) . ' Subscription',
                                                
-            'email_address' => Auth::user()->email,            
-                        
-            'return_url' => $this->returnUrl,
-            'cancel_url' => $this->cancelUrl,
-            'notify_url' => $this->notifyUrl,
+            'email_address' => Auth::user()->email,                                                
         ];
 
         return $this->payment->custom->createFormFields(
-            $data,
+            array_merge($data, $this->urlCollection),
             [
                 'value' => 'Create Subscription',
                 'class' => $this->cardUpdateLinkCss,
             ]
         );
+    }
+
+    /**
+     * Create a new subscription     
+     */
+    public function createOnsitePayment($frequency, $recurringAmount, $initialAmount = 0, $billingDate = null, $cycles = 0)
+    {
+        $recurringType = Subscription::frequencies($frequency);
+                   
+        $data = [            
+            'subscription_type' => 1,
+            'm_payment_id' => Order::generate(),            
+            'amount' => $initialAmount,
+            'recurring_amount' => $recurringAmount,
+            'billing_date' => $billingDate,
+            'frequency' => $frequency,
+            'cycles' => $cycles,
+            'custom_str1' => Auth::user()->getMorphClass(),            
+            'custom_int1' => Auth::user()->getKey(),            
+            'custom_int2' => $frequency,
+            'custom_str2' => config('payfast.plans')[$frequency]['name'],
+                        
+            'item_name' => config('app.name') . " $recurringType Subscription",
+                                               
+            'email_address' => Auth::user()->email,            
+                        
+            $this->urlCollection,
+        ];
+
+        // Generate payment identifier
+        $identifier = $this->payment->onsite->generatePaymentIdentifier($data);
+
+        
+
+        if($identifier!== null){
+            $html = '<html><head><script src="https://www.payfast.co.za/onsite/engine.js"></script><body>';
+            echo $html;
+            echo '<script type="text/javascript">window.payfast_do_onsite_payment({"uuid":"'.$identifier.'"});</script>';
+            echo "</body></html>";
+        }
+
+        // return $this->payment->custom->createFormFields(
+        //     $data,
+        //     [
+        //         'value' => 'Create Subscription',
+        //         'class' => $this->cardUpdateLinkCss,
+        //     ]
+        // );
     }
 
     /**
@@ -130,15 +162,11 @@ class Payfast implements PaymentGateway
             'custom_str3' => 'Monthly Subscription',
             'custom_int2' => Auth::user()->getKey(),
             'custom_int3' => 1, // Plan ID
-            'custom_int4' => 1, // Quantity                        
-            // 'email_confirmation' => false,
-            'return_url' => $this->returnUrl,
-            'cancel_url' => $this->cancelUrl,
-            'notify_url' => $this->notifyUrl,
+            'custom_int4' => 1, // Quantity                                                
         ];
 
         return $this->payment->custom->createFormFields(
-            $data,
+            array_merge($data, $this->urlCollection),
             [
                 'value' => 'Create Tokenization',
                 'class' => $this->cardUpdateLinkCss,

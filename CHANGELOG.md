@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.1.0 - 2021-12-07
+
+- more refactoring to keep payfast class small and compact
+- first attempt at getting onsite payments work - card locked out with 'Unfortunately this card does not support recurring payments.'
+- the order is now a numeric and a dash with today's date and time
+- improvement on invalid morph model exception message
+
 ## 0.0.3 - 2021-12-07
 
 - refactored webhooks

@@ -25,6 +25,8 @@ trait ManagesSubscriptions
     
     public function subscription($name = 'default')
     {
+        ray($this->subscriptions()->pluck('name'));
+
         return $this->subscriptions->where('name', $name)->first();
     }
 
@@ -89,7 +91,7 @@ trait ManagesSubscriptions
     public function subscribed($name = 'default', $plan = null)
     {
         $subscription = $this->subscription($name);
-
+        ray($subscription);
         if (! $subscription || ! $subscription->valid()) {
             return false;
         }

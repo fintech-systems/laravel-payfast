@@ -21,13 +21,14 @@ class CreateSubscriptionsTable extends Migration
             $table->integer('plan_id');
             $table->string('token')->unique();
             $table->string('status');
+            $table->string('merchant_payment_id');
             $table->string('payment_status')->nullable();
             $table->string('subscription_status')->nullable();
             $table->timestamp('next_bill_at')->nullable();
-            $table->timestamp('trial_ends_at')->nullable();
-            $table->timestamp('paused_from')->nullable();
             $table->timestamp('ends_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();
+            $table->timestamp('trial_ends_at')->nullable();
+            $table->timestamp('paused_from')->nullable();            
             $table->timestamps();
 
             $table->index(['billable_id', 'billable_type']);
