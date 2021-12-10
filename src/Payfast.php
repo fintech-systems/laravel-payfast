@@ -11,6 +11,9 @@ use FintechSystems\Payfast\Contracts\PaymentGateway;
 
 class Payfast implements PaymentGateway
 {
+    const COMPLETED_PAYMENT_STATUS = 'COMPLETE';
+    const CANCELLED_PAYMENT_STATUS  = 'CANCELLED';
+
     private $payment;
 
     private $returnUrl;
@@ -124,23 +127,14 @@ class Payfast implements PaymentGateway
 
         // Generate payment identifier
         $identifier = $this->payment->onsite->generatePaymentIdentifier($data);
-
         
-
         if($identifier!== null){
             $html = '<html><head><script src="https://www.payfast.co.za/onsite/engine.js"></script><body>';
             echo $html;
             echo '<script type="text/javascript">window.payfast_do_onsite_payment({"uuid":"'.$identifier.'"});</script>';
             echo "</body></html>";
         }
-
-        // return $this->payment->custom->createFormFields(
-        //     $data,
-        //     [
-        //         'value' => 'Create Subscription',
-        //         'class' => $this->cardUpdateLinkCss,
-        //     ]
-        // );
+        
     }
 
     /**

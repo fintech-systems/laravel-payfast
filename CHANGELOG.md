@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.2.0 - 2021-12-10
+
+- the system can now handle ad-hoc payments and will store the receipts
+- refactored database to handle ad-hoc receipts
+- created boilerplate to fetch subscription information after appying a payment
+- refactored the webhook to make it look a lot more tidy
+- move another routine into try / catch block
+- told the bank to get off and fix my card which doesn't work - will get a a Thyme bank card tomorrow
+- improved logging sentence with full stop and more ray colour coding in webhook
+
 ## 0.1.0 - 2021-12-07
 
 - more refactoring to keep payfast class small and compact

@@ -6,12 +6,16 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use FintechSystems\Payfast\Cashier;
+use FintechSystems\Payfast\Receipt;
 use Illuminate\Support\Facades\Log;
 use FintechSystems\Payfast\Subscription;
+use FintechSystems\Payfast\Facades\Payfast;
 use Symfony\Component\HttpFoundation\Response;
 use FintechSystems\Payfast\Events\WebhookHandled;
 use FintechSystems\Payfast\Events\WebhookReceived;
+use FintechSystems\Payfast\Events\PaymentSucceeded;
 use FintechSystems\Payfast\Events\SubscriptionCreated;
+use FintechSystems\Payfast\Events\SubscriptionFetched;
 use FintechSystems\Payfast\Events\SubscriptionCancelled;
 use FintechSystems\Payfast\Exceptions\MissingSubscription;
 use FintechSystems\Payfast\Events\SubscriptionPaymentSucceeded;
@@ -28,20 +32,21 @@ class WebhookController extends Controller
      */
     public function __invoke(Request $request)
     {
+        Log::info("Incoming Webhook...");
+        ray('Incoming Webook')->purple();
         $payload = $request->all();
-        ray($payload);
+        ray($payload)->blue();
         Log::debug($payload);
 
         WebhookReceived::dispatch($payload);
-
-        if (!isset($payload['token'])) {
-            $message = "Missing subscription token";
-            Log::critical($message);
-            ray($message)->red();
-            throw new MissingSubscriptionToken;
-        }
-
+        
         try {
+            if (!isset($payload['token'])) {
+                $this->nonSubscriptionPaymentReceived($payload);
+                WebhookHandled::dispatch($payload);            
+                return new Response('Webhook nonSubscriptionPaymentReceived handled');
+            }
+
             if (!$this->findSubscription($payload['token'])) {
                 $this->createSubscription($payload);
                 WebhookHandled::dispatch($payload);
@@ -69,6 +74,39 @@ class WebhookController extends Controller
         
     }
 
+    /**
+     * Handle one-time payment succeeded.
+     *
+     * @param  array  $payload
+     * @return void
+     */
+    protected function nonSubscriptionPaymentReceived(array $payload)
+    {        
+        $message = "Creating a non-subscription payment receipt...";
+        Log::info($message);
+        ray($message)->orange();
+        
+        $receipt = Receipt::create([
+            'merchant_payment_id' => $payload['m_payment_id'],
+            'payfast_payment_id' => $payload['pf_payment_id'],
+            'payment_status' => $payload['payment_status'],
+            'item_name' => $payload['item_name'],
+            'item_description' => $payload['item_description'],
+            'amount_gross' => $payload['amount_gross'],
+            'amount_fee' => $payload['amount_fee'],
+            'amount_net' => $payload['amount_net'],
+            'billable_id' => $payload['custom_int1'],
+            'billable_type' => $payload['custom_str1'],
+            'paid_at' => now(),
+        ]);
+
+        PaymentSucceeded::dispatch($receipt, $payload);        
+
+        $message = "Created the non-subscription payment receipt.";
+        Log::notice($message);
+        ray($message)->green();        
+    }
+    
     protected function createSubscription(array $payload)
     {
         $message = "Creating a new subscription...";
@@ -89,7 +127,7 @@ class WebhookController extends Controller
 
         SubscriptionCreated::dispatch($customer, $subscription, $payload);
 
-        $message = "Created a new subscription " . $payload['token'];
+        $message = "Created a new subscription " . $payload['token'] . ".";
         Log::notice($message);
         ray($message)->green();
 
@@ -97,14 +135,16 @@ class WebhookController extends Controller
     }
 
     /**
-     * Handle subscription payment succeeded.
+     * Apply a subscription payment succeeded.
+     *
+     * Gets triggered after first payment, and every subsequent payment that has a token
      *
      * @param  array  $payload
      * @return void
      */
     protected function applySubscriptionPayment(array $payload)
     {
-        $message = "Applying a payment to subscription " . $payload['token'] . "...";
+        $message = "Applying a subscription payment to " . $payload['token'] . "...";
         Log::info($message);
         ray($message)->orange();
 
@@ -121,12 +161,28 @@ class WebhookController extends Controller
 
         SubscriptionPaymentSucceeded::dispatch($billable, $receipt, $payload);
 
-        $message = "Applied the payment";
+        $message = "Applied the subscription payment.";
         Log::notice($message);
         ray($message)->green();
 
+        $this->fetchSubscriptionInformation($payload);
         // Fetch the subscription to update it's information
 
+    }
+
+    protected function fetchSubscriptionInformation(array $payload) {
+        $message = "Fetching subscription information for " . $payload['token'] . "...";
+        Log::info($message);
+        ray($message)->orange();
+
+        $result = Payfast::fetchSubscription($payload['token']);
+
+        // Update or Create Subscription
+        $subscription = Subscription::find(1);
+
+        ray($result);
+
+        SubscriptionFetched::dispatch($subscription, $payload);
     }
 
     /**
@@ -162,12 +218,17 @@ class WebhookController extends Controller
 
         SubscriptionCancelled::dispatch($subscription, $payload);
 
-        $message = "Cancelled the subscription";
+        $message = "Cancelled the subscription.";
         Log::notice($message);
         ray($message)->green();
     }
 
-    protected function findOrCreateCustomer(array $passthrough)
+    private function findSubscription(string $subscriptionId)
+    {
+        return Cashier::$subscriptionModel::firstWhere('token', $subscriptionId);
+    }
+
+    private function findOrCreateCustomer(array $passthrough)
     {
         if (!isset($passthrough['custom_str1'], $passthrough['custom_int1'])) {
             throw new InvalidMorphModelInPayload($passthrough['custom_str1'] . "|" . $passthrough['custom_int1']);
@@ -178,10 +239,5 @@ class WebhookController extends Controller
             'billable_type' => $passthrough['custom_str1'],
         ])->billable;
     }
-
-    protected function findSubscription(string $subscriptionId)
-    {
-        return Cashier::$subscriptionModel::firstWhere('token', $subscriptionId);
-    }
-
+    
 }

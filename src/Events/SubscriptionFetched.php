@@ -5,9 +5,9 @@ namespace FintechSystems\Payfast\Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use FintechSystems\Payfast\Receipt;
+use FintechSystems\Payfast\Subscription;
 
-class PaymentSucceeded
+class SubscriptionFetched
 {
     use Dispatchable, SerializesModels;
 
@@ -19,14 +19,14 @@ class PaymentSucceeded
     public $billable;
 
     /**
-     * The receipt instance.
+     * The subscription instance.
      *
-     * @var \FintechSystems\Payfast\Receipt
+     * @var \FintechSystems\Payfast\Subscription
      */
-    public $receipt;
+    public $subscription;
 
     /**
-     * The webhook payload.
+     * The payload array.
      *
      * @var array
      */
@@ -36,13 +36,14 @@ class PaymentSucceeded
      * Create a new event instance.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $billable
-     * @param  \FintechSystems\Payfast\Receipt  $receipt
+     * @param  \FintechSystems\Payfast\Subscription  $subscription
      * @param  array  $payload
      * @return void
      */
-    public function __construct(Receipt $receipt, array $payload)
-    {        
-        $this->receipt = $receipt;
+    public function __construct(Model $billable, Subscription $subscription, array $payload)
+    {
+        $this->billable = $billable;
+        $this->subscription = $subscription;
         $this->payload = $payload;
     }
 }

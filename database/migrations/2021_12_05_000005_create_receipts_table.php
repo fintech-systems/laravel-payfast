@@ -15,13 +15,18 @@ class CreateReceiptsTable extends Migration
     {
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
+            $table->string('merchant_payment_id')->nullable();
+            $table->string('payfast_payment_id')->unique();
+            $table->string('payment_status');
+            $table->string('item_name');
+            $table->string('item_description')->nullable();
+            $table->string('amount_gross');
+            $table->string('amount_fee');
+            $table->string('amount_net');
             $table->unsignedBigInteger('billable_id')->nullable();
-            $table->string('billable_type')->nullable();                        
-            $table->string('order_id')->unique();            
-            $table->string('payfast_payment_id')->unique();            
+            $table->string('billable_type')->nullable();
             $table->string('payfast_token')->nullable()->index();
-            $table->string('amount');
-            $table->string('fees');            
+            $table->string('order_id')->unique()->nullable();
             $table->timestamp('paid_at');
             $table->timestamps();
 
