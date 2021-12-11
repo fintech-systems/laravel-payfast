@@ -14,6 +14,7 @@ return [
         3 => [
             'name' => 'Monthly R 99',
             'start_date' => \Carbon\Carbon::now()->addDay()->format('Y-m-d'),
+            'payfast_frequency' => 3,
             'initial_amount' => 5.01,
             'recurring_amount' => 5.02,
         ],

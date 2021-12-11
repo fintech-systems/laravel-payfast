@@ -150,12 +150,20 @@ class WebhookController extends Controller
 
         $billable = $this->findSubscription($payload['token'])->billable;
 
-        $receipt = $billable->receipts()->create([
+        $receipt = $billable->receipts()->create([     
             'payfast_token' => $payload['token'],
-            'payfast_payment_id' => $payload['pf_payment_id'],
-            'order_id' => $payload['m_payment_id'],
-            'amount' => $payload['amount_gross'],
-            'fees' => $payload['amount_fee'],            
+            'order_id' => $payload['m_payment_id'],            
+            
+            'merchant_payment_id' => $payload['m_payment_id'],            
+            'payfast_payment_id' => $payload['pf_payment_id'],            
+            'payment_status' => $payload['payment_status'],
+            'item_name' => $payload['item_name'],
+            'item_description' => $payload['item_description'],
+            'amount_gross' => $payload['amount_gross'],
+            'amount_fee' => $payload['amount_fee'],
+            'amount_net' => $payload['amount_net'],                    
+            'billable_id' => $payload['custom_int1'],
+            'billable_type' => $payload['custom_str1'],            
             'paid_at' => now(),
         ]);
 
@@ -165,9 +173,12 @@ class WebhookController extends Controller
         Log::notice($message);
         ray($message)->green();
 
-        $this->fetchSubscriptionInformation($payload);
+        // Dispatch a new job to fetch the subscription information
+        // $this->fetchSubscriptionInformation($payload);
         // Fetch the subscription to update it's information
 
+        // PayFast requires a 200 response after a successful payment application
+        return response('Subscription Payment Applied', 200);        
     }
 
     protected function fetchSubscriptionInformation(array $payload) {

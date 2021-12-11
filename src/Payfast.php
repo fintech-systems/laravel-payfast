@@ -71,22 +71,22 @@ class Payfast implements PaymentGateway
      */
     public function createSubscription($frequency, $recurringAmount, $initialAmount = 0, $billingDate = null, $cycles = 0)
     {                           
-        $data = [            
+        $data = [
             'subscription_type' => 1,
-            'm_payment_id' => Order::generate(),            
+            'm_payment_id' => Order::generate(),
             'amount' => $initialAmount,
             'recurring_amount' => $recurringAmount,
             'billing_date' => $billingDate ?? Carbon::now()->format('Y-m-d'),
             'frequency' => $frequency,
             'cycles' => $cycles,
-            'custom_str1' => Auth::user()->getMorphClass(),            
-            'custom_int1' => Auth::user()->getKey(),            
+            'custom_str1' => Auth::user()->getMorphClass(),
+            'custom_int1' => Auth::user()->getKey(),
             'custom_int2' => $frequency,
             'custom_str2' => config('payfast.plans')[$frequency]['name'],
                         
-            'item_name' => config('app.name') . Subscription::frequencies($frequency) . ' Subscription',
+            'item_name' => config('app.name') . ' ' . Subscription::frequencies($frequency) . ' Subscription',
                                                
-            'email_address' => Auth::user()->email,                                                
+            'email_address' => Auth::user()->email,
         ];
 
         return $this->payment->custom->createFormFields(
@@ -122,8 +122,9 @@ class Payfast implements PaymentGateway
                                                
             'email_address' => Auth::user()->email,            
                         
-            $this->urlCollection,
+            
         ];
+        $data = array_merge($data, $this->urlCollection);
 
         // Generate payment identifier
         $identifier = $this->payment->onsite->generatePaymentIdentifier($data);
