@@ -20,6 +20,7 @@ class Order extends Model
         $newRecord = self::create([
             'billable_id' => Auth::user()->getKey(),
             'billable_type' => Auth::user()->getMorphClass(),
+            'ip_address' => $_SERVER['REMOTE_ADDR'],
         ]);
 
         return $newRecord->id . '-' . Carbon::now()->format('YmdHis');

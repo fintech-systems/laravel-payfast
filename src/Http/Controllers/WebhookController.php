@@ -66,10 +66,10 @@ class WebhookController extends Controller
             }
         } catch (Exception $e) {            
             $message = $e->getMessage();
-            Log::critical($message);
-            ray($message);
-            ray($e);
-            return new Response('Webhook Exception');
+            Log::critical($message);            
+            ray($e)->red();
+            // Don't send a return value so that PayFast can retry
+            // return new Response('Webhook Exception');
         }
         
     }

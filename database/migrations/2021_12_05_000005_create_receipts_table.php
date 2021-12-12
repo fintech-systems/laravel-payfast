@@ -26,7 +26,7 @@ class CreateReceiptsTable extends Migration
             $table->string('payfast_token')->nullable()->index();
             $table->string('billable_type')->nullable();
             $table->unsignedBigInteger('billable_id')->nullable();                        
-            $table->string('order_id')->unique()->nullable();
+            $table->string('order_id')->nullable();
             $table->timestamp('paid_at');
             $table->timestamps();
 

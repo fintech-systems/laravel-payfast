@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use PayFast\PayFastApi;
 use PayFast\PayFastPayment;
 use FintechSystems\Payfast\Order;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use FintechSystems\Payfast\Contracts\PaymentGateway;
 
@@ -106,12 +107,12 @@ class Payfast implements PaymentGateway
         $plan = config('payfast.plans')[$planId];
 
         $recurringType = Subscription::frequencies($planId);
+
+        ray("billingDate in createOnsitePayment: " . $billingDate);
                    
         $data = [            
             'subscription_type' => 1,
-            'm_payment_id' => Order::generate(),            
-            // 'amount' => 5,
-            // 'recurring_amount' => 6,
+            'm_payment_id' => Order::generate(),                        
             'amount' => $plan['initial_amount'],
             'recurring_amount' => $plan['recurring_amount'],
             'billing_date' => $billingDate,
@@ -126,6 +127,10 @@ class Payfast implements PaymentGateway
                                                
             'email_address' => Auth::user()->email,                                                
         ];
+
+        Log::debug('PayFast onsite payment modal was invoked with these values:');
+        Log::debug($data);
+        ray($data);
 
         $data = array_merge($data, $this->urlCollection);
 

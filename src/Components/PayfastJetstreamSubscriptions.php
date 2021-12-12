@@ -23,7 +23,12 @@ class PayfastJetstreamSubscriptions extends Component
 
     public $identifier;
 
-    public function confirmUserDeletion()
+    protected $listeners = [
+        'billingUpdated' => '$refresh',
+        'message' => '$refresh',
+    ];
+    
+    public function confirmCancelSubscription()
     {
         $this->resetErrorBag();
 
@@ -32,6 +37,14 @@ class PayfastJetstreamSubscriptions extends Component
         $this->dispatchBrowserEvent('confirming-cancel-subscription');
 
         $this->confirmingCancelSubscription = true;
+    }
+
+    public function cancelSubscription() {
+        ray(Auth::user()->subscriptions()->active()->first()->token);
+        
+        Payfast::cancelSubscription(Auth::user()->subscriptions()->active()->first()->token);
+        
+        $this->emit('billingUpdated');
     }
 
     /**
@@ -49,9 +62,9 @@ class PayfastJetstreamSubscriptions extends Component
             Carbon::now()->addDay()->format('Y-m-d'), // When to start recurring payments   
         );
      
-        $this->displayingCreateSubscription = true;
+        $this->displayingCreateSubscription = true;        
     }
-
+    
     /**
      * Render the component.
      *
@@ -59,6 +72,8 @@ class PayfastJetstreamSubscriptions extends Component
      */
     public function render()
     {
+        ray('Subscription component render is called');
+        
         return view('vendor.payfast.components.payfast-jetstream-subscriptions');
     }
 }

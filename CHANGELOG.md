@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.4.0 - 2021-12-12
+
+- added ip_address to orders table, breaking change
+- order ID doesn't have to be unique anymore in receipts table
+- don't send return value when receiving an exception in the webhook
+- reverse engineered onsite.engine.js and obtained a working event listener 'message'
+- added event listeners for post PayFast subscription modal event 'message'
+
 ## 0.3.0 - 2021-12-12
 
 - did a lot of work on the Jetstream/Livewire component to get dynamic subscritions working
