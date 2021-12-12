@@ -101,39 +101,43 @@ class Payfast implements PaymentGateway
     /**
      * Create a new subscription     
      */
-    public function createOnsitePayment($frequency, $recurringAmount, $initialAmount = 0, $billingDate = null, $cycles = 0)
+    public function createOnsitePayment($planId, $billingDate = null, $cycles = 0)
     {
-        $recurringType = Subscription::frequencies($frequency);
+        $plan = config('payfast.plans')[$planId];
+
+        $recurringType = Subscription::frequencies($planId);
                    
         $data = [            
             'subscription_type' => 1,
             'm_payment_id' => Order::generate(),            
-            'amount' => $initialAmount,
-            'recurring_amount' => $recurringAmount,
+            // 'amount' => 5,
+            // 'recurring_amount' => 6,
+            'amount' => $plan['initial_amount'],
+            'recurring_amount' => $plan['recurring_amount'],
             'billing_date' => $billingDate,
-            'frequency' => $frequency,
+            'frequency' => $planId,
             'cycles' => $cycles,
             'custom_str1' => Auth::user()->getMorphClass(),            
             'custom_int1' => Auth::user()->getKey(),            
-            'custom_int2' => $frequency,
-            'custom_str2' => config('payfast.plans')[$frequency]['name'],
+            'custom_int2' => $planId,
+            'custom_str2' => $plan['name'],
                         
             'item_name' => config('app.name') . " $recurringType Subscription",
                                                
-            'email_address' => Auth::user()->email,            
-                        
-            
+            'email_address' => Auth::user()->email,                                                
         ];
+
         $data = array_merge($data, $this->urlCollection);
 
         // Generate payment identifier
         $identifier = $this->payment->onsite->generatePaymentIdentifier($data);
         
         if($identifier!== null){
-            $html = '<html><head><script src="https://www.payfast.co.za/onsite/engine.js"></script><body>';
-            echo $html;
+            return $identifier;
+            // $html = '<html><head><script src="https://www.payfast.co.za/onsite/engine.js"></script><body>';
+            // echo $html;
             echo '<script type="text/javascript">window.payfast_do_onsite_payment({"uuid":"'.$identifier.'"});</script>';
-            echo "</body></html>";
+            // echo "</body></html>";
         }
         
     }

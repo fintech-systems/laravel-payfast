@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.3.0 - 2021-12-12
+
+- did a lot of work on the Jetstream/Livewire component to get dynamic subscritions working
+- breaking change is createOnsitePayment signature change
+
 ## 0.2.0 - 2021-12-10
 
 - the system can now handle ad-hoc payments and will store the receipts

@@ -2,66 +2,54 @@
 
 namespace FintechSystems\Payfast\Components;
 
+use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use FintechSystems\Payfast\Facades\Payfast;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
 class PayfastJetstreamSubscriptions extends Component
-{    
+{
     /**
      * The component's state.
      *
      * @var array
      */
-    public $state = [];
+    public $confirmingCancelSubscription = false;
 
-    public $updateCard;
+    public $displayingCreateSubscription = false;
 
-    public $createSubscription;
-    
-    /**
-     * Prepare the component.
-     *
-     * @return void
-     */
-    public function mount()
-    {
-        $this->state = Auth::user()->withoutRelations()->toArray();
-        
-        $this->updateCard = Payfast::updateCardLink($this->state['credit_card_token']);
+    public $plan = 3;
 
-        $this->createSubscription = Payfast::createToken(5);
-    }
+    public $identifier;
 
-    /**
-     * Update the user's subscription information.
-     *
-     * @param  \Laravel\Fortify\Contracts\UpdatesUserProfileInformation  $updater
-     * @return void
-     */
-    public function updateSubscriptionInformation(UpdatesUserProfileInformation $updater)
+    public function confirmUserDeletion()
     {
         $this->resetErrorBag();
 
-        $updater->update(
-            Auth::user(),
-            $this->state
-        );
-        
-        $this->emit('saved');
+        $this->password = '';
 
-        $this->emit('refresh-navigation-menu');
+        $this->dispatchBrowserEvent('confirming-cancel-subscription');
+
+        $this->confirmingCancelSubscription = true;
+    }
+
+    /**
+     * When the selected plan changes, refresh the PayFast identifier's signature
+     */
+    public function updatedPlan($planId)
+    {        
+        $this->plan = $planId;        
     }
     
-    /**
-     * Get the current user of the application.
-     *
-     * @return mixed
-     */
-    public function getUserProperty()
-    {
-        return Auth::user();
+    public function displayCreateSubscription()
+    {        
+        $this->identifier = Payfast::createOnsitePayment(
+            (int) $this->plan,
+            Carbon::now()->addDay()->format('Y-m-d'), // When to start recurring payments   
+        );
+     
+        $this->displayingCreateSubscription = true;
     }
 
     /**
@@ -71,6 +59,6 @@ class PayfastJetstreamSubscriptions extends Component
      */
     public function render()
     {
-        return view('vendor.payfast.components.payfast-jetstream-subscriptions');        
+        return view('vendor.payfast.components.payfast-jetstream-subscriptions');
     }
 }
