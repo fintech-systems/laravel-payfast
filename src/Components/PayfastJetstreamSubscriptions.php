@@ -10,11 +10,8 @@ use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
 class PayfastJetstreamSubscriptions extends Component
 {
-    /**
-     * The component's state.
-     *
-     * @var array
-     */
+    public $user;
+
     public $confirmingCancelSubscription = false;
 
     public $displayingCreateSubscription = false;
@@ -25,9 +22,9 @@ class PayfastJetstreamSubscriptions extends Component
 
     protected $listeners = [
         'billingUpdated' => '$refresh',
-        'message' => '$refresh',
+        // 'message' => '$refresh',
     ];
-    
+
     public function confirmCancelSubscription()
     {
         $this->resetErrorBag();
@@ -39,32 +36,45 @@ class PayfastJetstreamSubscriptions extends Component
         $this->confirmingCancelSubscription = true;
     }
 
-    public function cancelSubscription() {
-        ray(Auth::user()->subscriptions()->active()->first()->token);
-        
+    public function cancelSubscription()
+    {
+        ray($this->user->subscriptions()->active()->first()->token);
+
         Payfast::cancelSubscription(Auth::user()->subscriptions()->active()->first()->token);
-        
+
         $this->emit('billingUpdated');
+
+        $this->confirmingCancelSubscription = false;
     }
 
     /**
      * When the selected plan changes, refresh the PayFast identifier's signature
      */
     public function updatedPlan($planId)
-    {        
-        $this->plan = $planId;        
+    {
+        $this->plan = $planId;
     }
-    
+
     public function displayCreateSubscription()
-    {        
+    {
+        $subscriptionStartsAt =
+            $this->user->onGenericTrial()
+            ? $this->user->trialEndsAt()->addDay()->format('Y-m-d')
+            : now()->format('Y-m-d');
+
         $this->identifier = Payfast::createOnsitePayment(
             (int) $this->plan,
-            Carbon::now()->addDay()->format('Y-m-d'), // When to start recurring payments   
+            $subscriptionStartsAt
         );
-     
-        $this->displayingCreateSubscription = true;        
+
+        $this->displayingCreateSubscription = true;
     }
-    
+
+    public function mount()
+    {
+        $this->user = Auth::user();
+    }
+
     /**
      * Render the component.
      *
@@ -72,8 +82,6 @@ class PayfastJetstreamSubscriptions extends Component
      */
     public function render()
     {
-        ray('Subscription component render is called');
-        
         return view('vendor.payfast.components.payfast-jetstream-subscriptions');
     }
 }

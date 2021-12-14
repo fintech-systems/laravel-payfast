@@ -28,6 +28,7 @@ class SubscriptionsTest extends FeatureTestCase
             'token' => 244,
             'plan_id' => 2323,            
             'status' => Subscription::STATUS_ACTIVE,
+            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertTrue($billable->subscribed('main'));
@@ -61,7 +62,7 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_their_subscription_is_on_trial()
     {
-        $billable = $this->createBillable('taylor');
+        $billable = $this->createBillable('eugene');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
@@ -69,6 +70,7 @@ class SubscriptionsTest extends FeatureTestCase
             'plan_id' => 2323,            
             'status' => Subscription::STATUS_TRIALING,
             'trial_ends_at' => Carbon::tomorrow(),
+            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertTrue($billable->subscribed('main'));
@@ -95,7 +97,7 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_their_subscription_is_cancelled()
     {
-        $billable = $this->createBillable('taylor');
+        $billable = $this->createBillable('eugene');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
@@ -103,6 +105,7 @@ class SubscriptionsTest extends FeatureTestCase
             'plan_id' => 2323,            
             'status' => Subscription::STATUS_CANCELLED,
             'ends_at' => Carbon::tomorrow(),
+            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertTrue($subscription->valid());
@@ -125,6 +128,7 @@ class SubscriptionsTest extends FeatureTestCase
             'plan_id' => 2323,
             'status' => Subscription::STATUS_CANCELLED,            
             'ends_at' => Carbon::yesterday(),
+            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertFalse($subscription->valid());
@@ -145,7 +149,8 @@ class SubscriptionsTest extends FeatureTestCase
             'name' => 'main',
             'token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_PAUSED,            
+            'status' => Subscription::STATUS_PAUSED,
+            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertFalse($subscription->valid());
@@ -168,6 +173,7 @@ class SubscriptionsTest extends FeatureTestCase
             'plan_id' => 2323,
             'status' => Subscription::STATUS_ACTIVE,            
             'paused_from' => Carbon::tomorrow(),
+            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertTrue($subscription->valid());

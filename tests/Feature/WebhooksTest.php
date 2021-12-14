@@ -27,6 +27,7 @@ class WebhooksTest extends FeatureTestCase
         $order = Order::create([
             'billable_id' => $user->getKey(),
             'billable_type' => $user->getMorphClass(),
+            'ip_address' => '127.0.0.1',
         ]);
 
         $this->postJson('payfast/webhook', [
@@ -79,6 +80,7 @@ class WebhooksTest extends FeatureTestCase
         $order = Order::create([
             'billable_id' => $user->getKey(),
             'billable_type' => $user->getMorphClass(),
+            'ip_address' => '127.0.0.1',
         ]);
 
         $this->postJson('payfast/webhook', [
@@ -124,7 +126,7 @@ class WebhooksTest extends FeatureTestCase
 
         Event::fake();
 
-        $billable = $this->createBillable('taylor');
+        $billable = $this->createBillable('eugene');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
@@ -132,6 +134,7 @@ class WebhooksTest extends FeatureTestCase
             'plan_id' => 2323,
             'status' => Subscription::STATUS_ACTIVE,
             'next_bill_at' => '2021-12-04',
+            'merchant_payment_id' => 'random',
         ]);
 
         $this->postJson('payfast/webhook', [            
@@ -147,7 +150,6 @@ class WebhooksTest extends FeatureTestCase
             'token' => '244',
             'plan_id' => 2323,
             'payment_status' => Subscription::PAYMENT_STATUS_CANCELLED,
-        ]);
-        
+        ]);        
     }
 }

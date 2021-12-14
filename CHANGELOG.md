@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.4.1 - 2021-12-14
+
+- migrated payfast-jetstream blade back into this library
+- add $user in Subscription module and removed 'message' listener
+- started implementation of trials
+- the cancel dialog will now close on cancellation
+- removed some debugging code, both in the Subscription module and the Subscription concern
+- updated the webhook to handle card information updates
+- added IP address to order information and updates many tests
+- added merchant_payment_info to many tests as it caused nullable errors
+- all tests passing
+
 ## 0.4.0 - 2021-12-12
 
 - added ip_address to orders table, breaking change

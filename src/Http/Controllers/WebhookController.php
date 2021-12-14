@@ -68,8 +68,8 @@ class WebhookController extends Controller
             $message = $e->getMessage();
             Log::critical($message);            
             ray($e)->red();
-            // Don't send a return value so that PayFast can retry
-            // return new Response('Webhook Exception');
+
+            return response('An exception occurred in the PayFast webhook controller', 500);            
         }
         
     }
@@ -143,8 +143,13 @@ class WebhookController extends Controller
      * @return void
      */
     protected function applySubscriptionPayment(array $payload)
-    {
-        $message = "Applying a subscription payment to " . $payload['token'] . "...";
+    {    
+        if (is_null($payload['item_name'])) {
+            $payload['item_name'] = 'Card Information Updated';
+            $message = "Updating card information for " . $payload['token'] . "...";
+        } else {
+            $message = "Applying a subscription payment to " . $payload['token'] . "...";
+        }
         Log::info($message);
         ray($message)->orange();
 
@@ -158,7 +163,7 @@ class WebhookController extends Controller
             'payfast_payment_id' => $payload['pf_payment_id'],            
             'payment_status' => $payload['payment_status'],
             'item_name' => $payload['item_name'],
-            'item_description' => $payload['item_description'],
+            'item_description' => $payload['item_description'] ?? null,
             'amount_gross' => $payload['amount_gross'],
             'amount_fee' => $payload['amount_fee'],
             'amount_net' => $payload['amount_net'],                    
@@ -169,7 +174,11 @@ class WebhookController extends Controller
 
         SubscriptionPaymentSucceeded::dispatch($billable, $receipt, $payload);
 
-        $message = "Applied the subscription payment.";
+        if ($payload['item_name'] == 'Card Information Updated') {            
+            $message = "Updated the card information.";
+        } else {
+            $message = "Applied the subscription payment.";
+        }        
         Log::notice($message);
         ray($message)->green();
 
@@ -178,7 +187,7 @@ class WebhookController extends Controller
         // Fetch the subscription to update it's information
 
         // PayFast requires a 200 response after a successful payment application
-        return response('Subscription Payment Applied', 200);        
+        return response('Subscription Payment Applied', 200);
     }
 
     protected function fetchSubscriptionInformation(array $payload) {
