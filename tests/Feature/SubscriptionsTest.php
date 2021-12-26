@@ -6,7 +6,10 @@ use Carbon\Carbon;
 use LogicException;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Request;
 use FintechSystems\Payfast\Subscription;
+use FintechSystems\Payfast\Facades\Payfast;
+use FintechSystems\Payfast\Facades\PayFastApi;
 
 class SubscriptionsTest extends FeatureTestCase
 {
@@ -26,7 +29,7 @@ class SubscriptionsTest extends FeatureTestCase
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
             'token' => 244,
-            'plan_id' => 2323,            
+            'plan_id' => 2323,
             'status' => Subscription::STATUS_ACTIVE,
             'merchant_payment_id' => 'random',
         ]);
@@ -67,7 +70,7 @@ class SubscriptionsTest extends FeatureTestCase
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
             'token' => 244,
-            'plan_id' => 2323,            
+            'plan_id' => 2323,
             'status' => Subscription::STATUS_TRIALING,
             'trial_ends_at' => Carbon::tomorrow(),
             'merchant_payment_id' => 'random',
@@ -102,7 +105,7 @@ class SubscriptionsTest extends FeatureTestCase
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
             'token' => 244,
-            'plan_id' => 2323,            
+            'plan_id' => 2323,
             'status' => Subscription::STATUS_CANCELLED,
             'ends_at' => Carbon::tomorrow(),
             'merchant_payment_id' => 'random',
@@ -126,7 +129,7 @@ class SubscriptionsTest extends FeatureTestCase
             'name' => 'main',
             'token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_CANCELLED,            
+            'status' => Subscription::STATUS_CANCELLED,
             'ends_at' => Carbon::yesterday(),
             'merchant_payment_id' => 'random',
         ]);
@@ -165,13 +168,13 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_subscriptions_can_be_on_a_paused_grace_period()
     {
-        $billable = $this->createBillable('taylor');
+        $billable = $this->createBillable('eugene');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
             'token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_ACTIVE,            
+            'status' => Subscription::STATUS_ACTIVE,
             'paused_from' => Carbon::tomorrow(),
             'merchant_payment_id' => 'random',
         ]);
@@ -185,5 +188,13 @@ class SubscriptionsTest extends FeatureTestCase
         $this->assertFalse($subscription->recurring());
         $this->assertFalse($subscription->ended());
     }
-    
+
+    public function test_fetching_a_subscription()
+    {        
+        $response = Http::response(['status' => 'success']);
+
+        Http::fake(['api.payfast.co.za/*' => $response]);
+
+        $this->assertEquals(['status' => 'success'], PayFastApi::fetchSubscription('d19702d6-702f-4d87-ab5f-6b538a29d5ff'));
+    }
 }

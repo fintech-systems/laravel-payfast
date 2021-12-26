@@ -2,12 +2,13 @@
 
 namespace FintechSystems\Payfast;
 
-use Carbon\Carbon;
-use DateTimeInterface;
 use Exception;
+use Carbon\Carbon;
+use LogicException;
+use DateTimeInterface;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use FintechSystems\Payfast\Concerns\Prorates;
-use LogicException;
 
 /**
  * @property \Laravel\Paddle\Billable $billable
@@ -41,6 +42,7 @@ class Subscription extends Model
         'token' => 'string',
         'plan_id' => 'integer',
         'next_bill_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'trial_ends_at' => 'datetime',
         'paused_from' => 'datetime',
         'ends_at' => 'datetime',
@@ -542,6 +544,17 @@ class Subscription extends Model
         $this->payfastInfo = null;
 
         return $response;
+    }
+
+    public function updatePayFastSubscription(array $result) {
+        if ($result['status'] !== 'success') {
+            Log::error('Unable to update PayFast subscription because API result !== success');
+            Log::debug($result);
+        }
+
+        $subscription = Subscription::whereToken($result['data']['response']['token'])->first();
+        $subscription->subscription_status = $result['data']['response']['status_text'];
+        $subscription->save();
     }
 
     /**

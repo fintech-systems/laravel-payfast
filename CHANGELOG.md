@@ -2,6 +2,20 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.5.1 - 2021-12-26
+
+- Breaking change Subscription table now has all fields returned by Fetch Subscription from PayFast API and a new payme
+- Added payment_method to subscriptions table
+- Updated composer
+- A new test to check if subscription payments can be handled
+- A basic receipt test was copied from Cashier Paddle
+- An *incomplete* Fetch subscription test was created
+- Fetch subscription now returns the array from PayFast
+- A new PayFast API service provider was created that implements the code in the constructor
+- There is a new method to update a PayFast subscription
+- Fairly close to a beta candidate as most of the database schema work is done
+- Tests *failing*
+
 ## 0.4.1 - 2021-12-14
 
 - migrated payfast-jetstream blade back into this library

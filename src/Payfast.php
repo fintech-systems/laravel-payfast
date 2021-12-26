@@ -183,6 +183,8 @@ class Payfast implements PaymentGateway
         $fetchArray = $this->api->subscriptions->fetch($token);
 
         ray($fetchArray);
+
+        return $fetchArray;
     }
 
     public function payment($amount, $itemName)

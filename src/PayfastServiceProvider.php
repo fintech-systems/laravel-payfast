@@ -3,8 +3,10 @@
 namespace FintechSystems\Payfast;
 
 use FintechSystems\Payfast\Components\PayfastJetstreamSubscriptions;
+use FintechSystems\Payfast\PayFastApi as FintechSystemsPayFastApi;
 use Livewire\Livewire;
 use Illuminate\Support\ServiceProvider;
+use PayFast\PayFastApi;
 
 class PayfastServiceProvider extends ServiceProvider
 {
@@ -42,6 +44,24 @@ class PayfastServiceProvider extends ServiceProvider
             'card_update_link_css' => config('payfast.card_update_link_css'),
             'card_updated_return_url' => config('payfast.card_updated_return_url'),
         ]));
-        
+
+        $this->app->bind('payfast-api', function ($app) {
+            ray('Binding 3rd party API to my API');
+            
+            $client = new PayFastApi([
+                    'merchantId' => config('payfast.merchant_id'),            
+                    'passPhrase' => config('payfast.passphrase'),
+                    'testMode' => config('payfast.testmode'),   
+            ]);
+
+            return new FintechSystemsPayFastApi($client);
+        });
+
+        // $this->app->bind('payfast-api', fn() => new PayFastApi([
+        //     'merchantId' => config('payfast.merchant_id'),            
+        //     'passPhrase' => config('payfast.passphrase'),
+        //     'testMode' => config('payfast.testmode'),            
+        // ]));
+
     }
 }

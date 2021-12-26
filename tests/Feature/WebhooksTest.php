@@ -16,6 +16,47 @@ use FintechSystems\Payfast\Events\SubscriptionPaymentSucceeded;
 
 class WebhooksTest extends FeatureTestCase
 {        
+    public function test_it_can_handle_a_subscription_payment_event()
+    {
+        Event::fake();
+
+        $user = $this->createUser();
+
+        $order = Order::create([
+            'billable_id' => $user->getKey(),
+            'billable_type' => $user->getMorphClass(),
+            'ip_address' => '127.0.0.1',
+        ]);
+
+        $this->postJson('payfast/webhook', [
+            'm_payment_id' => $order->id,
+            'pf_payment_id' => '68551425',
+            'payment_status' => 'COMPLETE',            
+            'item_name' => 'Subscription Payment Test',
+            'token' => 'test_subscription',
+            'custom_int1' => $user->getKey(),
+            'custom_str1' => $user->getMorphClass(),
+            'custom_int2' => 1234, // Plan ID
+            'custom_str2' => 'Monthly Subscription', // Name of the subscription instance item
+            'billing_date' => now()->addDay()->format('Y-m-d'),
+            'amount_gross' => '5.03',
+            'amount_fee' => '-2.50',
+            'amount_net' => '2.53',            
+        ])->assertOk();
+
+        $this->assertDatabaseHas('customers', [
+            'billable_id' => $user->id,
+            'billable_type' => $user->getMorphClass(),
+        ]);
+
+        $this->assertDatabaseHas('receipts', [
+            'billable_id' => $user->id,
+            'billable_type' => $user->getMorphClass(),            
+            'paid_at' => now(),            
+        ]);
+        
+    }
+
     public function test_it_can_handle_a_subscription_created_event()
     {
         $this->withoutExceptionHandling();
@@ -44,7 +85,7 @@ class WebhooksTest extends FeatureTestCase
             'custom_str2' => 'Monthly Subscription', // Name of the subscription instance item
             'email_address' => $user->email,                                    
             'merchant_id' => '13741656',
-            'token' => 'bar',
+            'token' => 'test_subscription',
             'billing_date' => '2021-12-04',
             'signature' => '966ffe36f01023fe8ac7aab6fdfe1b07'
         ])->assertOk();
@@ -59,7 +100,7 @@ class WebhooksTest extends FeatureTestCase
             'billable_type' => $user->getMorphClass(),
             'name' => 'Monthly Subscription',
             'plan_id' => 1234,
-            'token' => 'bar',            
+            'token' => 'test_subscription',
             'status' => Subscription::STATUS_ACTIVE,            
             'trial_ends_at' => null,
         ]);
@@ -98,7 +139,7 @@ class WebhooksTest extends FeatureTestCase
             'custom_int4' => 1,
             'email' => $user->payfastEmail(),                                    
             'merchant_id' => '13741656',
-            'token' => 'bar',
+            'token' => 'test_subscription',
             'billing_date' => '2021-12-04',
             'signature' => '966ffe36f01023fe8ac7aab6fdfe1b07'            
         ])->assertOk();
@@ -112,7 +153,7 @@ class WebhooksTest extends FeatureTestCase
             'billable_id' => $user->id,
             'billable_type' => $user->getMorphClass(),
             'name' => 'main',
-            'token' => 'bar',
+            'token' => 'test_subscription',
             'plan_id' => 1234,
             'payment_status' => Subscription::PAYMENT_STATUS_COMPLETE,            
             'trial_ends_at' => null,
