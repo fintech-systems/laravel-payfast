@@ -2,9 +2,14 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.5.2 - 2022-05-27
+
+- Added information about setup to README and new TROUBLESHOOTING file
+- Created alpha release
+
 ## 0.5.1 - 2021-12-26
 
-- Breaking change Subscription table now has all fields returned by Fetch Subscription from PayFast API and a new payme
+- Breaking change Subscription table now has all fields returned by Fetch Subscription from PayFast API
 - Added payment_method to subscriptions table
 - Updated composer
 - A new test to check if subscription payments can be handled

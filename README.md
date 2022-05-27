@@ -36,6 +36,24 @@ If you're using subscriptions, run the migrations:
 php artisan migrate
 ```
 
+## Setup
+
+In resources/views/profiles/show.php, add this to display the subscription dialogue:
+
+```
+<!-- Subscriptions -->
+            <x-jet-section-border />
+            
+            <div class="mt-10 sm:mt-0">
+                @livewire('payfast-jetstream-subscriptions')
+            </div>
+            
+            <x-jet-section-border />
+            <!-- End Subscriptions -->
+```
+
+Please note, views must be published first
+
 ## Usage
 
 ### Examples
