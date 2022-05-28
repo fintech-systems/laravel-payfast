@@ -100,7 +100,9 @@ class Payfast implements PaymentGateway
     }
 
     /**
-     * Create a new subscription     
+     * Create a new subscription based on the Payfast "Onsite Payment" modal method
+     * 
+     * https://developers.payfast.co.za/docs#onsite_payments
      */
     public function createOnsitePayment($planId, $billingDate = null, $cycles = 0)
     {
@@ -121,18 +123,18 @@ class Payfast implements PaymentGateway
             'custom_str1' => Auth::user()->getMorphClass(),            
             'custom_int1' => Auth::user()->getKey(),            
             'custom_int2' => $planId,
-            'custom_str2' => $plan['name'],
-                        
-            'item_name' => config('app.name') . " $recurringType Subscription",
-                                               
+            'custom_str2' => $plan['name'],                        
+            'item_name' => config('app.name') . " $recurringType Subscription",                                               
             'email_address' => Auth::user()->email,                                                
         ];
+                
+        $data = array_merge($data, $this->urlCollection);
+
+        ray("The callback URL defined in createOnsitePayment is " . $data['notify_url']);
 
         Log::debug('PayFast onsite payment modal was invoked with these values:');
-        Log::debug($data);
-        ray($data);
 
-        $data = array_merge($data, $this->urlCollection);
+        Log::debug($data);
 
         // Generate payment identifier
         $identifier = $this->payment->onsite->generatePaymentIdentifier($data);

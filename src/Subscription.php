@@ -527,33 +527,43 @@ class Subscription extends Model
         return $this;
     }
 
+    // /**
+    //  * Update the underlying Paddle subscription information for the model.
+    //  *
+    //  * @param  array  $options
+    //  * @return array
+    //  */
+    // public function updatePaddleSubscription(array $options)
+    // {
+    //     $payload = $this->billable->paddleOptions(array_merge([
+    //         'subscription_id' => $this->paddle_id,
+    //     ], $options));
+
+    //     $response = Cashier::post('/subscription/users/update', $payload)['response'];
+
+    //     $this->payfastInfo = null;
+
+    //     return $response;
+    // }
+
     /**
-     * Update the underlying Paddle subscription information for the model.
-     *
-     * @param  array  $options
-     * @return array
+     * Update the underlying PayFast subscription information for the model.
      */
-    public function updatePaddleSubscription(array $options)
-    {
-        $payload = $this->billable->paddleOptions(array_merge([
-            'subscription_id' => $this->paddle_id,
-        ], $options));
-
-        $response = Cashier::post('/subscription/users/update', $payload)['response'];
-
-        $this->payfastInfo = null;
-
-        return $response;
-    }
-
     public function updatePayFastSubscription(array $result) {
         if ($result['status'] !== 'success') {
             Log::error('Unable to update PayFast subscription because API result !== success');
+
+            Log::error('Result will follow');
+
             Log::debug($result);
         }
 
-        $subscription = Subscription::whereToken($result['data']['response']['token'])->first();
+        $subscription = Subscription::whereToken($result['data']['response']['token'])->firstOrFail();
+        
         $subscription->subscription_status = $result['data']['response']['status_text'];
+
+        $subscription->next_bill_at = $result['data']['response']['run_date'];
+
         $subscription->save();
     }
 

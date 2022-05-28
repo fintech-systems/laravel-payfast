@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.5.3 - 2022-05-28
+
+- Added more information about local debugging especially with regards to changing the `.env` for Expose / ngrok
+- Added Nova assets, a Subscription resource and two actions, Fetch Subscription and Cancel Subscription
+- The Livewire Jetstream blade should now interpret if you are in grace period (e.g. you have cancelled)
+- Added code to get the PayFast subscription `status_text` and `run_date` post Subscription creation so that the UI can show when the next billing will occur
+- Worked on spacing of lines and logging and commenting
+- Fixed some links to live code in README
+
 ## 0.5.2 - 2022-05-27
 
 - Added information about setup to README and new TROUBLESHOOTING file

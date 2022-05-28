@@ -20,6 +20,10 @@ class PayfastServiceProvider extends ServiceProvider
             __DIR__.'/../resources/views' => resource_path('views/vendor/payfast'),
         ], 'payfast-views');
 
+        $this->publishes([
+            __DIR__.'/../Nova' => app_path('Nova'),
+        ], 'payfast-nova-resource');
+
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');

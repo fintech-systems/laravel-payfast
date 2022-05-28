@@ -32,10 +32,14 @@ class WebhookController extends Controller
      */
     public function __invoke(Request $request)
     {
-        Log::info("Incoming Webhook...");
-        ray('Incoming Webook')->purple();
+        Log::info("Incoming Webhook from Payfast...");
+
+        ray('Incoming Webhook from Payfast')->purple();
+
         $payload = $request->all();
+
         ray($payload)->blue();
+
         Log::debug($payload);
 
         WebhookReceived::dispatch($payload);
@@ -66,7 +70,9 @@ class WebhookController extends Controller
             }
         } catch (Exception $e) {            
             $message = $e->getMessage();
+
             Log::critical($message);            
+
             ray($e)->red();
 
             return response('An exception occurred in the PayFast webhook controller', 500);            
@@ -83,7 +89,9 @@ class WebhookController extends Controller
     protected function nonSubscriptionPaymentReceived(array $payload)
     {        
         $message = "Creating a non-subscription payment receipt...";
+
         Log::info($message);
+
         ray($message)->orange();
         
         $receipt = Receipt::create([
@@ -103,14 +111,18 @@ class WebhookController extends Controller
         PaymentSucceeded::dispatch($receipt, $payload);        
 
         $message = "Created the non-subscription payment receipt.";
+
         Log::notice($message);
+
         ray($message)->green();        
     }
     
     protected function createSubscription(array $payload)
     {
         $message = "Creating a new subscription...";
+
         Log::info($message);
+
         ray($message)->orange();
 
         $customer = $this->findOrCreateCustomer($payload);
@@ -128,7 +140,9 @@ class WebhookController extends Controller
         SubscriptionCreated::dispatch($customer, $subscription, $payload);
 
         $message = "Created a new subscription " . $payload['token'] . ".";
+
         Log::notice($message);
+
         ray($message)->green();
 
         $this->applySubscriptionPayment($payload);
@@ -150,7 +164,9 @@ class WebhookController extends Controller
         } else {
             $message = "Applying a subscription payment to " . $payload['token'] . "...";
         }
+
         Log::info($message);
+
         ray($message)->orange();
 
         $billable = $this->findSubscription($payload['token'])->billable;
@@ -158,7 +174,6 @@ class WebhookController extends Controller
         $receipt = $billable->receipts()->create([     
             'payfast_token' => $payload['token'],
             'order_id' => $payload['m_payment_id'],            
-            
             'merchant_payment_id' => $payload['m_payment_id'],            
             'payfast_payment_id' => $payload['pf_payment_id'],            
             'payment_status' => $payload['payment_status'],
@@ -179,13 +194,24 @@ class WebhookController extends Controller
         } else {
             $message = "Applied the subscription payment.";
         }        
+        
         Log::notice($message);
+
         ray($message)->green();
 
-        // Dispatch a new job to fetch the subscription information
-        // $this->fetchSubscriptionInformation($payload);
-        // Fetch the subscription to update it's information
+        // Dispatch a new API call to fetch the subscription information and update the status and next_bill_at
+        $result = Payfast::fetchSubscription($payload['token']);
 
+        Log::debug("Result of new API call to get current subscription status and next_bill_at");
+
+        Log::debug($result);
+
+        ray($result);
+
+        $subscription = Subscription::whereToken($payload['token'])->first();
+
+        $subscription->updatePayFastSubscription($result);
+        
         // PayFast requires a 200 response after a successful payment application
         return response('Subscription Payment Applied', 200);
     }
@@ -230,7 +256,7 @@ class WebhookController extends Controller
         
         $subscription->cancelled_at = now();
 
-        $subscription->payment_status = $payload['payment_status'];
+        $subscription->payment_status = $payload['payment_status'];        
 
         $subscription->paused_from = null;
 

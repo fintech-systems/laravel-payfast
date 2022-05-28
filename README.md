@@ -1,5 +1,5 @@
-# Laravel PayFast
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/fintech-systems/packagist-boilerplate) [![Build Status](https://app.travis-ci.com/fintech-systems/packagist-boilerplate.svg?branch=main)](https://app.travis-ci.com/fintech-systems/packagist-boilerplate) ![GitHub](https://img.shields.io/github/license/fintech-systems/packagist-boilerplate)
+## About Laravel PayFast
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/fintech-systems/laravel-payfast) [![Build Status](https://app.travis-ci.com/fintech-systems/laravel-payfast.svg?branch=main)](https://app.travis-ci.com/fintech-systems/laravel-payfast) ![GitHub](https://img.shields.io/github/license/fintech-systems/laravel-payfast)
 
 A PayFast API designed to run standalone or part of a Laravel Application
 
@@ -9,7 +9,7 @@ Requirements:
 
 - PHP 8.0
 - Laravel
-- A PayFast account
+- A Payfast account
 
 ## Installation
 
@@ -26,9 +26,15 @@ Publish the config file with:
 php artisan vendor:publish --provider="FintechSystems\Payfast\PayfastServiceProvider" --tag="payfast-config"
 ```
 
-Publish default Success, Cancelled, and Notify (ITN) views with:
+Publish default Success, Cancelled, and Notify (ITN) views. This will also publish a Jetstream component that allows you to initiate a new subscription:
+
 ```bash
 php artisan vendor:publish --provider="FintechSystems\Payfast\PayfastServiceProvider" --tag="payfast-views"
+```
+Optionally publish a Laravel Nova Subscription Resource to show resource events received via the callback
+
+```bash
+php artisan vendor:publish --provider="FintechSystems\Payfast\PayfastServiceProvider" --tag="payfast-nova-resource"
 ```
 
 If you're using subscriptions, run the migrations:
@@ -42,14 +48,14 @@ In resources/views/profiles/show.php, add this to display the subscription dialo
 
 ```
 <!-- Subscriptions -->
-            <x-jet-section-border />
-            
-            <div class="mt-10 sm:mt-0">
-                @livewire('payfast-jetstream-subscriptions')
-            </div>
-            
-            <x-jet-section-border />
-            <!-- End Subscriptions -->
+    <x-jet-section-border />
+    
+    <div class="mt-10 sm:mt-0">
+        @livewire('payfast-jetstream-subscriptions')
+    </div>
+    
+    <x-jet-section-border />
+<!-- End Subscriptions -->
 ```
 
 Please note, views must be published first

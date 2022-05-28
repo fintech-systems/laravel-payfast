@@ -21,7 +21,19 @@
                 </div>
             @endif
 
-            @if ($user->subscriptions()->active()->count() > 0)
+            @if ($user->subscriptions()->onGracePeriod()->count() > 0)
+                <h3 class="text-lg font-medium text-gray-900">
+                    Your subscription is on a grace period.                    
+                </h3>
+                <div class="mt-3 max-w-xl text-sm text-gray-600">
+                    <p>
+                        Your subscription will end on 
+                        {{ $user->subscriptions()->active()->first()->ends_at->format('Y-m-d') }}.
+                    </p>
+                </div>
+            @endif
+
+            @if ($user->subscriptions()->active()->count() > 0 and $user->subscriptions()->onGracePeriod()->count() == 0)
                 <h3 class="text-lg font-medium text-gray-900">
                     You are subscribed to the
                     {{ $user->subscriptions()->active()->first()->name }} plan.
@@ -93,25 +105,32 @@
             
         </div>
         <!-- End Subscription Action Buttons -->
-
+        
         <!-- Create Subscription Modal -->
         @if($displayingCreateSubscription)        
             <script>
-                window.payfast_do_onsite_payment({"uuid":"{{ $identifier }}"})                
+                console.log('Launching Payfast onsite payment modal')
+
+                window.payfast_do_onsite_payment({"uuid":"{{ $identifier }}"})
+                
+                console.log("Adding an event listener to 'message' for when it closes")
+                
                 window.addEventListener("message", refreshComponent);
+
             </script>
         @endif  
 
-        @push('body')
+        @push('payfast-event-listener')
             <script>        
             const refreshComponent = () => {
-                        console.log('Refreshing subscription status')
+                        console.log('Refreshing subscription status by emitting a billingUpdated event')
+                        
                         Livewire.emit('billingUpdated')
                     }
             </script>
         @endpush
 
-        <!-- Cancel Subscription Confirmation Modal -->
+        <!-- Start Cancel Subscription Confirmation Modal -->
         <x-jet-dialog-modal wire:model="confirmingCancelSubscription">
 
             <x-slot name="title">
@@ -141,7 +160,7 @@
             </x-slot>
 
         </x-jet-dialog-modal>
-        <!-- Cancel Subscription Confirmation Modal -->
+        <!-- End Cancel Subscription Confirmation Modal -->
                 
     </x-slot>
 </x-jet-action-section>
