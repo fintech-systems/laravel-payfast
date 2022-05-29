@@ -129,11 +129,19 @@ class Payfast implements PaymentGateway
 
         $data = array_merge($data, $this->urlCollection);
 
-        ray("The callback URL defined in createOnsitePayment is " . $data['notify_url']);
+        $message = "The callback URL defined in createOnsitePayment is " . $data['notify_url'];
 
-        Log::debug('PayFast onsite payment modal was invoked with these values:');
+        ray($message);
+
+        $message = "PayFast onsite payment modal was invoked with these merged values:";
+
+        Log::debug($message);
+
+        ray($message)->orange();
 
         Log::debug($data);
+
+        ray($data)->orange();
 
         // Generate payment identifier
         $identifier = $this->payment->onsite->generatePaymentIdentifier($data);

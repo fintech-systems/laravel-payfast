@@ -21,7 +21,8 @@
                 </div>
             @endif
 
-            @if ($user->subscriptions()->onGracePeriod()->count() == 1)
+            {{-- @if ($user->subscriptions()->onGracePeriod()->count() == 1) --}}
+            @subscriptionGracePeriod
                 <h3 class="text-lg font-medium text-gray-900">
                     Your subscription is on a grace period.                    
                 </h3>
@@ -31,7 +32,7 @@
                         {{ $user->subscriptions()->active()->first()->ends_at->format('Y-m-d') }}.
                     </p>
                 </div>
-            @endif
+            @endsubscriptionGracePeriod
 
             @if ($user->subscriptions()->active()->count() == 1 and $user->subscriptions()->onGracePeriod()->count() == 0)
                 <h3 class="text-lg font-medium text-gray-900">
@@ -60,7 +61,7 @@
 
         <!-- Subscription Action Buttons -->
         <div class="mt-5">            
-            @if ($user->subscriptions()->active()->count() > 0)
+            @if ($user->subscriptions()->active()->count() > 0 && $user->subscriptions()->onGracePeriod()->count() != 1)
                 <x-jet-secondary-button
                     style="color: red;"
                     wire:click="confirmCancelSubscription"
@@ -70,6 +71,7 @@
 
                 <x-jet-secondary-button
                     style="color: blue;"
+                    wire:click="updateCard"
                     >
                     {{ __('Update Card') }}
                 </x-jet-secondary-button>                                                
@@ -90,7 +92,11 @@
                         style="color: green;"
                         wire:click="displayCreateSubscription"
                         >
+                        @subscriptionGracePeriod
+                        {{ __('Resubscribe') }}
+                        @else
                         {{ __('Subscribe') }}
+                        @endsubscriptionGracePeriod
                     </x-jet-secondary-button>
 
                     <div wire:loading

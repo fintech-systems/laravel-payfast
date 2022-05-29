@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.5.5 - 2022-05-29
+
+- Added an update card method in the Livewire component
+- Added a helper method in the service provider to easily identify users in grace period
+- Added a method to easily deduce current active subscription
+- Work on dates when user cancels current subscription, still have to fix amount
+
 ## 0.5.4 - 2022-05-29
 
 - Added PHP code fixer

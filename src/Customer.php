@@ -36,7 +36,7 @@ class Customer extends Model
     }
 
     /**
-     * Determine if the Paddle model is on a "generic" trial at the model level.
+     * Determine if the PayFast model is on a "generic" trial at the model level.
      *
      * @return bool
      */

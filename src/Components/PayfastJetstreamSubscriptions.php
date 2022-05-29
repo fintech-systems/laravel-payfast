@@ -18,9 +18,10 @@ class PayfastJetstreamSubscriptions extends Component
 
     public $identifier;
 
+    public $updateCardLink;
+
     protected $listeners = [
-        'billingUpdated' => '$refresh',
-        // 'message' => '$refresh',
+        'billingUpdated' => '$refresh',        
     ];
 
     public function confirmCancelSubscription()
@@ -46,6 +47,22 @@ class PayfastJetstreamSubscriptions extends Component
     }
 
     /**
+     * Update card TBA direct, but first have to work out present active subscription
+     */
+    public function updateCard()
+    {
+        $token = $this->user->activeSubscription()->token;
+
+        $url = "https://www.payfast.co.za/eng/recurring/update/$token?return=" . config('app.url') . "/user/profile?card_updated=true";
+
+        ray($url);
+
+        return redirect()->to($url);
+
+        // ray($activeSubscription);
+    }
+    
+    /**
      * When the selected plan changes, refresh the PayFast identifier's signature
      */
     public function updatedPlan($planId)
@@ -55,10 +72,14 @@ class PayfastJetstreamSubscriptions extends Component
 
     public function displayCreateSubscription()
     {
-        $subscriptionStartsAt =
-            $this->user->onGenericTrial()
-            ? $this->user->trialEndsAt()->addDay()->format('Y-m-d')
-            : now()->format('Y-m-d');
+        if ($this->user->onGenericTrial()) {
+            // TBA check if monthly or yearly
+            $subscriptionStartsAt =  $this->user->trialEndsAt()->addMonth()->format('Y-m-d');
+        }
+
+        if ($this->user->activeSubscription()->onGracePeriod()) {
+            $subscriptionStartsAt = $this->user->activeSubscription()->ends_at->addDay()->format('Y-m-d');
+        }            
 
         $this->identifier = Payfast::createOnsitePayment(
             (int) $this->plan,
@@ -70,7 +91,7 @@ class PayfastJetstreamSubscriptions extends Component
 
     public function mount()
     {
-        $this->user = Auth::user();
+        $this->user = Auth::user();        
     }
 
     /**

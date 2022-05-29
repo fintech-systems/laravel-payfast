@@ -2,12 +2,14 @@
 
 namespace FintechSystems\Payfast;
 
-use FintechSystems\Payfast\Components\PayfastJetstreamReceipts;
-use FintechSystems\Payfast\Components\PayfastJetstreamSubscriptions;
-use FintechSystems\Payfast\PayFastApi as FintechSystemsPayFastApi;
-use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use PayFast\PayFastApi;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
+use FintechSystems\Payfast\Components\PayfastJetstreamReceipts;
+use FintechSystems\Payfast\PayFastApi as FintechSystemsPayFastApi;
+use FintechSystems\Payfast\Components\PayfastJetstreamSubscriptions;
 
 class PayfastServiceProvider extends ServiceProvider
 {
@@ -32,6 +34,10 @@ class PayfastServiceProvider extends ServiceProvider
         Livewire::component('payfast-jetstream-subscriptions', PayfastJetstreamSubscriptions::class);
 
         Livewire::component('payfast-jetstream-receipts', PayfastJetstreamReceipts::class);
+
+        Blade::if('subscriptionGracePeriod', function () {
+            return Auth::user()->subscriptions()->onGracePeriod()->count() == 1 ? true : false;
+        });
     }
 
     public function register()

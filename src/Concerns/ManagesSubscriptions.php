@@ -29,6 +29,17 @@ trait ManagesSubscriptions
     }
 
     /**
+     * Technically a user can only have one active subscription.
+     * 
+     * This is important where a user has cancelled an old subscription.
+     * 
+     * TODO ENUM
+     */
+    public function activeSubscription() {
+        return $this->subscriptions->where('status', 'active')->first();
+    }
+
+    /**
      * Determine if the Billable model is on trial.
      *
      * @param  string  $name

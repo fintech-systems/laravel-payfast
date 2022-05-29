@@ -45,7 +45,7 @@ trait ManagesCustomer
     // }
 
     /**
-     * Get the billable model's email address to associate with Paddle.
+     * Get the billable model's email address to associate with PayFast.
      *
      * @return string|null
      */
