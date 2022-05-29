@@ -140,7 +140,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Screenshots
 
-![Livewire Subscriptions and Receipts Components](../screenshots/subscription_and_receipts.png)
+![Livewire Subscriptions and Receipts Components](../../screenshots/subscription_and_receipts.png)
 
 ## Credits
 
