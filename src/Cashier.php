@@ -2,8 +2,8 @@
 
 namespace FintechSystems\Payfast;
 
-use Illuminate\Support\Facades\Http;
 use FintechSystems\Payfast\Exceptions\PayfastException;
+use Illuminate\Support\Facades\Http;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
@@ -198,7 +198,7 @@ class Cashier
     {
         static::$runsMigrations = false;
 
-        return new static;
+        return new static();
     }
 
     /**
@@ -210,7 +210,7 @@ class Cashier
     {
         static::$registersRoutes = false;
 
-        return new static;
+        return new static();
     }
 
     /**
@@ -222,7 +222,7 @@ class Cashier
     {
         static::$deactivatePastDue = false;
 
-        return new static;
+        return new static();
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace FintechSystems\Payfast\Concerns;
 
-use InvalidArgumentException;
 use FintechSystems\Payfast\Cashier;
+use InvalidArgumentException;
 use LogicException;
 
 trait PerformsCharges
@@ -73,7 +73,7 @@ trait PerformsCharges
 
         $payload['passthrough'] = json_encode($payload['passthrough']);
 
-        $payload = array_map(fn($value) => is_string($value) ? trim($value) : $value, $payload);
+        $payload = array_map(fn ($value) => is_string($value) ? trim($value) : $value, $payload);
 
         return Cashier::post('/product/generate_pay_link', $payload)['response']['url'];
     }

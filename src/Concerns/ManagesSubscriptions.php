@@ -7,7 +7,7 @@ use FintechSystems\Payfast\Subscription;
 use FintechSystems\Payfast\SubscriptionBuilder;
 
 trait ManagesSubscriptions
-{    
+{
     public function newSubscription($name, $plan)
     {
         return new SubscriptionBuilder($this, $name, $plan);
@@ -22,9 +22,9 @@ trait ManagesSubscriptions
     {
         return $this->morphMany(Cashier::$subscriptionModel, 'billable')->orderByDesc('created_at');
     }
-    
+
     public function subscription($name = 'default')
-    {        
+    {
         return $this->subscriptions->where('name', $name)->first();
     }
 
@@ -126,6 +126,6 @@ trait ManagesSubscriptions
         return ! is_null($this->subscriptions()
             ->where('plan_id', $plan)
             ->get()
-            ->first(fn(Subscription $subscription) => $subscription->valid()));
+            ->first(fn (Subscription $subscription) => $subscription->valid()));
     }
 }

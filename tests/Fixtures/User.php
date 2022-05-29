@@ -1,6 +1,7 @@
 <?php
 
 // namespace Tests\Fixtures;
+
 namespace FintechSystems\Payfast\Tests\Fixtures;
 
 use FintechSystems\Payfast\Billable;

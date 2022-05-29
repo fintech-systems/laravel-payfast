@@ -3,8 +3,8 @@
 namespace FintechSystems\Payfast;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Order extends Model
 {
@@ -25,5 +25,4 @@ class Order extends Model
 
         return $newRecord->id . '-' . Carbon::now()->format('YmdHis');
     }
-    
 }

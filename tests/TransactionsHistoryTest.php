@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use PayFast\Exceptions\InvalidRequestException;
@@ -7,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 final class TransactionHistoryTest extends TestCase
 {
-
     private static $api;
 
     public static function setUpBeforeClass(): void
@@ -17,7 +17,7 @@ final class TransactionHistoryTest extends TestCase
                 [
                     'merchantId' => '10018867',
                     'passPhrase' => '2uU_k5q_vRS_',
-                    'testMode' => true
+                    'testMode' => true,
                 ]
             );
         } catch (InvalidRequestException $e) {
@@ -104,5 +104,4 @@ final class TransactionHistoryTest extends TestCase
 
         self::$api->transactionHistory->monthly(['date' => '2020-08-01']);
     }
-
 }

@@ -2,21 +2,21 @@
 
 namespace FintechSystems\Payfast;
 
-use FintechSystems\Payfast\Components\PayfastJetstreamSubscriptions;
 use FintechSystems\Payfast\Components\PayfastJetstreamReceipts;
+use FintechSystems\Payfast\Components\PayfastJetstreamSubscriptions;
 use FintechSystems\Payfast\PayFastApi as FintechSystemsPayFastApi;
-use Livewire\Livewire;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 use PayFast\PayFastApi;
 
 class PayfastServiceProvider extends ServiceProvider
 {
     public function boot()
-    {        
+    {
         $this->publishes([
             __DIR__.'/../config/payfast.php' => config_path('payfast.php'),
         ], 'payfast-config');
-        
+
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/payfast'),
         ], 'payfast-views');
@@ -30,17 +30,18 @@ class PayfastServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         Livewire::component('payfast-jetstream-subscriptions', PayfastJetstreamSubscriptions::class);
-        
+
         Livewire::component('payfast-jetstream-receipts', PayfastJetstreamReceipts::class);
     }
 
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/payfast.php', 'payfast'
+            __DIR__.'/../config/payfast.php',
+            'payfast'
         );
 
-        $this->app->bind('payfast', fn() => new Payfast([
+        $this->app->bind('payfast', fn () => new Payfast([
             'merchant_id' => config('payfast.merchant_id'),
             'merchant_key' => config('payfast.merchant_key'),
             'passphrase' => config('payfast.passphrase'),
@@ -54,15 +55,14 @@ class PayfastServiceProvider extends ServiceProvider
 
         $this->app->bind('payfast-api', function ($app) {
             ray('Binding 3rd party API to the PayFast API');
-            
+
             $client = new PayFastApi([
-                    'merchantId' => config('payfast.merchant_id'),            
+                    'merchantId' => config('payfast.merchant_id'),
                     'passPhrase' => config('payfast.passphrase'),
-                    'testMode' => config('payfast.testmode'),   
+                    'testMode' => config('payfast.testmode'),
             ]);
 
             return new FintechSystemsPayFastApi($client);
         });
-
     }
 }

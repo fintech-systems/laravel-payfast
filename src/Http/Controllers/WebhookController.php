@@ -3,24 +3,23 @@
 namespace FintechSystems\Payfast\Http\Controllers;
 
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use FintechSystems\Payfast\Cashier;
-use FintechSystems\Payfast\Receipt;
-use Illuminate\Support\Facades\Log;
-use FintechSystems\Payfast\Subscription;
-use FintechSystems\Payfast\Facades\Payfast;
-use Symfony\Component\HttpFoundation\Response;
-use FintechSystems\Payfast\Events\WebhookHandled;
-use FintechSystems\Payfast\Events\WebhookReceived;
 use FintechSystems\Payfast\Events\PaymentSucceeded;
+use FintechSystems\Payfast\Events\SubscriptionCancelled;
 use FintechSystems\Payfast\Events\SubscriptionCreated;
 use FintechSystems\Payfast\Events\SubscriptionFetched;
-use FintechSystems\Payfast\Events\SubscriptionCancelled;
-use FintechSystems\Payfast\Exceptions\MissingSubscription;
 use FintechSystems\Payfast\Events\SubscriptionPaymentSucceeded;
-use FintechSystems\Payfast\Exceptions\MissingSubscriptionToken;
+use FintechSystems\Payfast\Events\WebhookHandled;
+use FintechSystems\Payfast\Events\WebhookReceived;
 use FintechSystems\Payfast\Exceptions\InvalidMorphModelInPayload;
+use FintechSystems\Payfast\Exceptions\MissingSubscription;
+use FintechSystems\Payfast\Facades\Payfast;
+use FintechSystems\Payfast\Receipt;
+use FintechSystems\Payfast\Subscription;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class WebhookController extends Controller
 {
@@ -43,41 +42,44 @@ class WebhookController extends Controller
         Log::debug($payload);
 
         WebhookReceived::dispatch($payload);
-        
+
         try {
-            if (!isset($payload['token'])) {
+            if (! isset($payload['token'])) {
                 $this->nonSubscriptionPaymentReceived($payload);
-                WebhookHandled::dispatch($payload);            
+                WebhookHandled::dispatch($payload);
+
                 return new Response('Webhook nonSubscriptionPaymentReceived handled');
             }
 
-            if (!$this->findSubscription($payload['token'])) {
+            if (! $this->findSubscription($payload['token'])) {
                 $this->createSubscription($payload);
                 WebhookHandled::dispatch($payload);
+
                 return new Response('Webhook createSubscription/applySubscriptionPayment handled');
             }
 
             if ($payload['payment_status'] == Subscription::PAYMENT_STATUS_CANCELLED) {
                 $this->cancelSubscription($payload);
                 WebhookHandled::dispatch($payload);
+
                 return new Response('Webhook cancelSubscription handled');
             }
 
             if ($payload['payment_status'] == Subscription::PAYMENT_STATUS_COMPLETE) {
                 $this->applySubscriptionPayment($payload);
                 WebhookHandled::dispatch($payload);
+
                 return new Response('Webhook applySubscriptionPayment handled');
             }
-        } catch (Exception $e) {            
+        } catch (Exception $e) {
             $message = $e->getMessage();
 
-            Log::critical($message);            
+            Log::critical($message);
 
             ray($e)->red();
 
-            return response('An exception occurred in the PayFast webhook controller', 500);            
+            return response('An exception occurred in the PayFast webhook controller', 500);
         }
-        
     }
 
     /**
@@ -87,13 +89,13 @@ class WebhookController extends Controller
      * @return void
      */
     protected function nonSubscriptionPaymentReceived(array $payload)
-    {        
+    {
         $message = "Creating a non-subscription payment receipt...";
 
         Log::info($message);
 
         ray($message)->orange();
-        
+
         $receipt = Receipt::create([
             'merchant_payment_id' => $payload['m_payment_id'],
             'payfast_payment_id' => $payload['pf_payment_id'],
@@ -108,15 +110,15 @@ class WebhookController extends Controller
             'paid_at' => now(),
         ]);
 
-        PaymentSucceeded::dispatch($receipt, $payload);        
+        PaymentSucceeded::dispatch($receipt, $payload);
 
         $message = "Created the non-subscription payment receipt.";
 
         Log::notice($message);
 
-        ray($message)->green();        
+        ray($message)->green();
     }
-    
+
     protected function createSubscription(array $payload)
     {
         $message = "Creating a new subscription...";
@@ -126,14 +128,14 @@ class WebhookController extends Controller
         ray($message)->orange();
 
         $customer = $this->findOrCreateCustomer($payload);
-        
+
         $subscription = $customer->subscriptions()->create([
             'token' => $payload['token'],
             'plan_id' => $payload['custom_int2'],
             'name' => $payload['custom_str2'],
             'merchant_payment_id' => $payload['m_payment_id'],
             'payment_status' => $payload['payment_status'],
-            'status' => Subscription::STATUS_ACTIVE,            
+            'status' => Subscription::STATUS_ACTIVE,
             'next_bill_at' => $payload['billing_date'],
         ]);
 
@@ -157,7 +159,7 @@ class WebhookController extends Controller
      * @return void
      */
     protected function applySubscriptionPayment(array $payload)
-    {    
+    {
         if (is_null($payload['item_name'])) {
             $payload['item_name'] = 'Card Information Updated';
             $message = "Updating card information for " . $payload['token'] . "...";
@@ -170,29 +172,29 @@ class WebhookController extends Controller
 
         $billable = $this->findSubscription($payload['token'])->billable;
 
-        $receipt = $billable->receipts()->create([     
+        $receipt = $billable->receipts()->create([
             'payfast_token' => $payload['token'],
-            'order_id' => $payload['m_payment_id'],            
-            'merchant_payment_id' => $payload['m_payment_id'],            
-            'payfast_payment_id' => $payload['pf_payment_id'],            
+            'order_id' => $payload['m_payment_id'],
+            'merchant_payment_id' => $payload['m_payment_id'],
+            'payfast_payment_id' => $payload['pf_payment_id'],
             'payment_status' => $payload['payment_status'],
             'item_name' => $payload['item_name'],
             'item_description' => $payload['item_description'] ?? null,
             'amount_gross' => $payload['amount_gross'],
             'amount_fee' => $payload['amount_fee'],
-            'amount_net' => $payload['amount_net'],                    
+            'amount_net' => $payload['amount_net'],
             'billable_id' => $payload['custom_int1'],
-            'billable_type' => $payload['custom_str1'],            
+            'billable_type' => $payload['custom_str1'],
             'paid_at' => now(),
         ]);
 
         SubscriptionPaymentSucceeded::dispatch($billable, $receipt, $payload);
 
-        if ($payload['item_name'] == 'Card Information Updated') {            
+        if ($payload['item_name'] == 'Card Information Updated') {
             $message = "Updated the card information.";
         } else {
             $message = "Applied the subscription payment.";
-        }        
+        }
         Log::notice($message);
         ray($message)->green();
 
@@ -214,12 +216,13 @@ class WebhookController extends Controller
         $message = "Fetched and updated API status for token " . $payload['token'] . ".";
         Log::notice($message);
         ray($message)->green();
-        
+
         // PayFast requires a 200 response after a successful payment application
         return response('Subscription Payment Applied', 200);
     }
 
-    protected function fetchSubscriptionInformation(array $payload) {
+    protected function fetchSubscriptionInformation(array $payload)
+    {
         $message = "Fetching subscription information for " . $payload['token'] . "...";
         Log::info($message);
         ray($message)->orange();
@@ -246,20 +249,20 @@ class WebhookController extends Controller
         Log::info($message);
         ray($message)->orange();
 
-        if (!$subscription = $this->findSubscription($payload['token'])) {
-            throw new MissingSubscription;
+        if (! $subscription = $this->findSubscription($payload['token'])) {
+            throw new MissingSubscription();
         }
-        
+
         // Cancellation date...
         if (is_null($subscription->ends_at)) {
             $subscription->ends_at = $subscription->onTrial()
                 ? $subscription->trial_ends_at
                 : $subscription->next_bill_at->subMinutes(1);
-        }        
-        
+        }
+
         $subscription->cancelled_at = now();
 
-        $subscription->payment_status = $payload['payment_status'];        
+        $subscription->payment_status = $payload['payment_status'];
 
         $subscription->paused_from = null;
 
@@ -279,7 +282,7 @@ class WebhookController extends Controller
 
     private function findOrCreateCustomer(array $passthrough)
     {
-        if (!isset($passthrough['custom_str1'], $passthrough['custom_int1'])) {
+        if (! isset($passthrough['custom_str1'], $passthrough['custom_int1'])) {
             throw new InvalidMorphModelInPayload($passthrough['custom_str1'] . "|" . $passthrough['custom_int1']);
         }
 
@@ -288,5 +291,4 @@ class WebhookController extends Controller
             'billable_type' => $passthrough['custom_str1'],
         ])->billable;
     }
-    
 }

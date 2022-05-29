@@ -2,11 +2,9 @@
 
 namespace FintechSystems\Payfast\Components;
 
-use Carbon\Carbon;
-use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
 use FintechSystems\Payfast\Facades\Payfast;
-use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class PayfastJetstreamSubscriptions extends Component
 {

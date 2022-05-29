@@ -2,10 +2,10 @@
 
 namespace FintechSystems\Payfast;
 
-use FintechSystems\Payfast\Concerns\ManagesReceipts;
-use FintechSystems\Payfast\Concerns\PerformsCharges;
 use FintechSystems\Payfast\Concerns\ManagesCustomer;
+use FintechSystems\Payfast\Concerns\ManagesReceipts;
 use FintechSystems\Payfast\Concerns\ManagesSubscriptions;
+use FintechSystems\Payfast\Concerns\PerformsCharges;
 
 trait Billable
 {

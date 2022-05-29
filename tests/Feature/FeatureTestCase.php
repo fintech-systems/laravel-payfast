@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Orchestra\Testbench\TestCase;
-use Livewire\LivewireServiceProvider;
-use FintechSystems\Payfast\Tests\Fixtures\User;
 use FintechSystems\Payfast\PayfastServiceProvider;
+use FintechSystems\Payfast\Tests\Fixtures\User;
+use Livewire\LivewireServiceProvider;
+use Orchestra\Testbench\TestCase;
 
 abstract class FeatureTestCase extends TestCase
 {

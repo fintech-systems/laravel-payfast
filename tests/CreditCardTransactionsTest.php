@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use PayFast\Exceptions\InvalidRequestException;
@@ -7,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 final class CreditCardTransactionsTest extends TestCase
 {
-
     private static $api;
 
     public static function setUpBeforeClass(): void
@@ -17,7 +17,7 @@ final class CreditCardTransactionsTest extends TestCase
                 [
                     'merchantId' => '10004002',
                     'passPhrase' => 'payfast',
-                    'testMode' => true
+                    'testMode' => true,
                 ]
             );
         } catch (InvalidRequestException $e) {
@@ -44,5 +44,4 @@ final class CreditCardTransactionsTest extends TestCase
 
         self::$api->creditCardTransactions->fetch('test');
     }
-
 }

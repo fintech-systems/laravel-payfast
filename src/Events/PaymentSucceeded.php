@@ -2,14 +2,14 @@
 
 namespace FintechSystems\Payfast\Events;
 
-use Illuminate\Database\Eloquent\Model;
+use FintechSystems\Payfast\Receipt;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use FintechSystems\Payfast\Receipt;
 
 class PaymentSucceeded
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     /**
      * The billable entity.
@@ -41,7 +41,7 @@ class PaymentSucceeded
      * @return void
      */
     public function __construct(Receipt $receipt, array $payload)
-    {        
+    {
         $this->receipt = $receipt;
         $this->payload = $payload;
     }

@@ -2,13 +2,13 @@
 
 namespace FintechSystems\Payfast;
 
-use Exception;
 use Carbon\Carbon;
-use LogicException;
 use DateTimeInterface;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Model;
+use Exception;
 use FintechSystems\Payfast\Concerns\Prorates;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use LogicException;
 
 /**
  * @property \Laravel\Paddle\Billable $billable
@@ -16,15 +16,15 @@ use FintechSystems\Payfast\Concerns\Prorates;
 class Subscription extends Model
 {
     use Prorates;
-    
-    const STATUS_ACTIVE = 'active';
-    const STATUS_TRIALING = 'trialing';
-    const STATUS_PAST_DUE = 'past_due';
-    const STATUS_PAUSED = 'paused';
-    const STATUS_CANCELLED = 'cancelled';
 
-    const PAYMENT_STATUS_COMPLETE = 'COMPLETE';
-    const PAYMENT_STATUS_CANCELLED = 'CANCELLED';
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_TRIALING = 'trialing';
+    public const STATUS_PAST_DUE = 'past_due';
+    public const STATUS_PAUSED = 'paused';
+    public const STATUS_CANCELLED = 'cancelled';
+
+    public const PAYMENT_STATUS_COMPLETE = 'COMPLETE';
+    public const PAYMENT_STATUS_CANCELLED = 'CANCELLED';
 
     /**
      * The attributes that are not mass assignable.
@@ -549,7 +549,8 @@ class Subscription extends Model
     /**
      * Update the underlying PayFast subscription information for the model.
      */
-    public function updatePayFastSubscription(array $result) {
+    public function updatePayFastSubscription(array $result)
+    {
         if ($result['status'] !== 'success') {
             Log::error('Unable to update PayFast subscription because API result !== success');
 
@@ -559,7 +560,7 @@ class Subscription extends Model
         }
 
         $subscription = Subscription::whereToken($result['data']['response']['token'])->firstOrFail();
-        
+
         $subscription->subscription_status = $result['data']['response']['status_text'];
 
         $subscription->next_bill_at = $result['data']['response']['run_date'];
@@ -599,7 +600,7 @@ class Subscription extends Model
             'subscription_id' => $this->paddle_id,
         ], $this->billable->payfastOptions()));
 
-        return collect($result['response'])->map(fn(array $modifier) => new Modifier($this, $modifier));
+        return collect($result['response'])->map(fn (array $modifier) => new Modifier($this, $modifier));
     }
 
     /**
@@ -610,7 +611,7 @@ class Subscription extends Model
      */
     public function modifier($id)
     {
-        return $this->modifiers()->first(fn(Modifier $modifier) => $modifier->id() === $id);
+        return $this->modifiers()->first(fn (Modifier $modifier) => $modifier->id() === $id);
     }
 
     /**
@@ -805,7 +806,8 @@ class Subscription extends Model
     /**
      * PayFast frequencies
      */
-    public static function frequencies($frequency) {
+    public static function frequencies($frequency)
+    {
         return match ($frequency) {
             3 => 'Monthly',
             4 => 'Quarterly',

@@ -4,9 +4,9 @@ namespace FintechSystems\Payfast\Enums;
 
 class PaymentMethod
 {
-    const CREDIT_CARD = "credit_card";    
-    const EFT = "eft";    
-    
+    public const CREDIT_CARD = "credit_card";
+    public const EFT = "eft";
+
     public static function uiOptions()
     {
         return [

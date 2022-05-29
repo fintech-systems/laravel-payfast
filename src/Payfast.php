@@ -3,17 +3,16 @@
 namespace FintechSystems\Payfast;
 
 use Carbon\Carbon;
+use FintechSystems\Payfast\Contracts\PaymentGateway;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use PayFast\PayFastApi;
 use PayFast\PayFastPayment;
-use FintechSystems\Payfast\Order;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use FintechSystems\Payfast\Contracts\PaymentGateway;
 
 class Payfast implements PaymentGateway
 {
-    const COMPLETED_PAYMENT_STATUS = 'COMPLETE';
-    const CANCELLED_PAYMENT_STATUS  = 'CANCELLED';
+    public const COMPLETED_PAYMENT_STATUS = 'COMPLETE';
+    public const CANCELLED_PAYMENT_STATUS = 'CANCELLED';
 
     private $payment;
 
@@ -68,10 +67,10 @@ class Payfast implements PaymentGateway
     }
 
     /**
-     * Create a new subscription     
+     * Create a new subscription
      */
     public function createSubscription($frequency, $recurringAmount, $initialAmount = 0, $billingDate = null, $cycles = 0)
-    {                           
+    {
         $data = [
             'subscription_type' => 1,
             'm_payment_id' => Order::generate(),
@@ -84,9 +83,9 @@ class Payfast implements PaymentGateway
             'custom_int1' => Auth::user()->getKey(),
             'custom_int2' => $frequency,
             'custom_str2' => config('payfast.plans')[$frequency]['name'],
-                        
+
             'item_name' => config('app.name') . ' ' . Subscription::frequencies($frequency) . ' Subscription',
-                                               
+
             'email_address' => Auth::user()->email,
         ];
 
@@ -101,7 +100,7 @@ class Payfast implements PaymentGateway
 
     /**
      * Create a new subscription based on the Payfast "Onsite Payment" modal method
-     * 
+     *
      * https://developers.payfast.co.za/docs#onsite_payments
      */
     public function createOnsitePayment($planId, $billingDate = null, $cycles = 0)
@@ -111,23 +110,23 @@ class Payfast implements PaymentGateway
         $recurringType = Subscription::frequencies($planId);
 
         ray("billingDate in createOnsitePayment: " . $billingDate);
-                   
-        $data = [            
+
+        $data = [
             'subscription_type' => 1,
-            'm_payment_id' => Order::generate(),                        
+            'm_payment_id' => Order::generate(),
             'amount' => $plan['initial_amount'],
             'recurring_amount' => $plan['recurring_amount'],
             'billing_date' => $billingDate,
             'frequency' => $planId,
             'cycles' => $cycles,
-            'custom_str1' => Auth::user()->getMorphClass(),            
-            'custom_int1' => Auth::user()->getKey(),            
+            'custom_str1' => Auth::user()->getMorphClass(),
+            'custom_int1' => Auth::user()->getKey(),
             'custom_int2' => $planId,
-            'custom_str2' => $plan['name'],                        
-            'item_name' => config('app.name') . " $recurringType Subscription",                                               
-            'email_address' => Auth::user()->email,                                                
+            'custom_str2' => $plan['name'],
+            'item_name' => config('app.name') . " $recurringType Subscription",
+            'email_address' => Auth::user()->email,
         ];
-                
+
         $data = array_merge($data, $this->urlCollection);
 
         ray("The callback URL defined in createOnsitePayment is " . $data['notify_url']);
@@ -138,27 +137,26 @@ class Payfast implements PaymentGateway
 
         // Generate payment identifier
         $identifier = $this->payment->onsite->generatePaymentIdentifier($data);
-        
-        if($identifier!== null){
+
+        if ($identifier !== null) {
             return $identifier;
             // $html = '<html><head><script src="https://www.payfast.co.za/onsite/engine.js"></script><body>';
             // echo $html;
             echo '<script type="text/javascript">window.payfast_do_onsite_payment({"uuid":"'.$identifier.'"});</script>';
             // echo "</body></html>";
         }
-        
     }
 
     /**
      * Set up an ad-hoc payment agreement
-     * 
+     *
      * https://developers.payfast.co.za/docs#tokenization
      */
     public function createToken($amount = 0)
     {
         $data = [
             'custom_str1' => 'subscription',
-            'subscription_type' => 2,            
+            'subscription_type' => 2,
             'm_payment_id' => 'new_tokenization_' . Auth::user()->getKey(),
             'item_name' => config('app.name') . ' Monthly Subscription',
             'amount' => $amount,
@@ -168,7 +166,7 @@ class Payfast implements PaymentGateway
             'custom_str3' => 'Monthly Subscription',
             'custom_int2' => Auth::user()->getKey(),
             'custom_int3' => 1, // Plan ID
-            'custom_int4' => 1, // Quantity                                                
+            'custom_int4' => 1, // Quantity
         ];
 
         return $this->payment->custom->createFormFields(
@@ -203,14 +201,14 @@ class Payfast implements PaymentGateway
             $data,
             [
                 'value' => 'PAY NOW',
-                'class' => 'btn'
+                'class' => 'btn',
             ]
         );
     }
 
     /**
      * Generate a credit card update link
-     * 
+     *
      * Add 'target' => '_blank' to open in new window
      */
     public function updateCardLink($token)

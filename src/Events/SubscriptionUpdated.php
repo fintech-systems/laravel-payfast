@@ -2,13 +2,14 @@
 
 namespace FintechSystems\Payfast\Events;
 
+use FintechSystems\Payfast\Subscription;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use FintechSystems\Payfast\Subscription;
 
 class SubscriptionUpdated
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     /**
      * The subscription instance.

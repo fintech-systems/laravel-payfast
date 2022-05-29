@@ -13,8 +13,7 @@ $array = [
             "status" => 1,
             "status_reason" => "",
             "status_text" => "ACTIVE",
-            "token" => "21189d52-12eb-4108-9c0e-53343c7ac692"
-        ]
-    ]
+            "token" => "21189d52-12eb-4108-9c0e-53343c7ac692",
+        ],
+    ],
 ];
-

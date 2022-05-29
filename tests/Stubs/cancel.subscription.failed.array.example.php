@@ -5,6 +5,6 @@ $array = [
     "status" => "failed",
     "data" => [
         "response" => false,
-        "message" => "Failure - The subscription status is cancelled"
-    ]
+        "message" => "Failure - The subscription status is cancelled",
+    ],
 ];

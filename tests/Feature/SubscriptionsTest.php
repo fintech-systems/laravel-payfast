@@ -3,13 +3,12 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-use LogicException;
-
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Request;
-use FintechSystems\Payfast\Subscription;
 use FintechSystems\Payfast\Facades\Payfast;
+
 use FintechSystems\Payfast\Facades\PayFastApi;
+use FintechSystems\Payfast\Subscription;
+use Illuminate\Support\Facades\Http;
+use LogicException;
 
 class SubscriptionsTest extends FeatureTestCase
 {
@@ -189,11 +188,11 @@ class SubscriptionsTest extends FeatureTestCase
         $this->assertFalse($subscription->ended());
     }
 
-    // Unfortunately I can't get this test working. If I could get it right it could change the course of 
+    // Unfortunately I can't get this test working. If I could get it right it could change the course of
     // testing because then I can simulate API responses. Not sure if the original was based on having an
     // actual live subscription at PayFast, but nevertheless, we could actually do something like that.
     // public function test_fetching_a_subscription()
-    // {        
+    // {
     //     $response = Http::response(['status' => 'success']);
 
     //     Http::fake(['api.payfast.co.za/*' => $response]);

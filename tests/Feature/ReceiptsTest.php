@@ -2,9 +2,8 @@
 
 namespace Tests\Feature;
 
-
-use Money\Currency;
 use FintechSystems\Payfast\Receipt;
+use Money\Currency;
 
 class ReceiptsTest extends FeatureTestCase
 {

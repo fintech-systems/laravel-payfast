@@ -2,14 +2,15 @@
 
 namespace FintechSystems\Payfast\Events;
 
+use FintechSystems\Payfast\Receipt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use FintechSystems\Payfast\Receipt;
 
 class SubscriptionPaymentSucceeded
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     /**
      * The billable entity.

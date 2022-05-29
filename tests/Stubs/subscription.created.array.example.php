@@ -25,5 +25,5 @@ $array = [
     "merchant_id" => "13741656",
     "token" => "02d40467-b47d-4d73-ad75-5661d99b8779",
     "billing_date" => "2021-12-04",
-    "signature" => "966ffe36f01023fe8ac7aab6fdfe1b07"
+    "signature" => "966ffe36f01023fe8ac7aab6fdfe1b07",
 ];

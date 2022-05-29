@@ -2,16 +2,16 @@
 
 namespace FintechSystems\Payfast;
 
-use PayFast\PayFastApi as PayFastApiClient;
 use FintechSystems\Payfast\Contracts\PaymentGateway;
+use PayFast\PayFastApi as PayFastApiClient;
 
 class PayFastApi implements PaymentGateway
-{    
+{
     private $client;
 
     public function __construct(PayFastApiClient $client)
     {
-        $this->client = $client;                
+        $this->client = $client;
     }
 
     public function fetchSubscription($token)
@@ -20,5 +20,4 @@ class PayFastApi implements PaymentGateway
 
         return $fetchArray;
     }
-
 }
