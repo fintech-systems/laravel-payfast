@@ -4,6 +4,8 @@ All notable changes to `laravel-payfast` will be documented in this file.
 
 ## 0.5.4 - 2022-05-29
 
+- Configured Travis
+- Removed two currency locale tests because Travis failed
 - Removed a lot of old paddle code or renamed it, especially paddleOptions
 - There is a now a Receipt Nova interface and a Livewire front-end for receipts too
 - Added documentation references to `TROUBLESHOOTING.md`
