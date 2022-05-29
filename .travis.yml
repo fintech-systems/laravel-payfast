@@ -4,8 +4,7 @@ php:
       - 8.0
 
 env:
-  matrix:
-    - COMPOSER_FLAGS="--prefer-lowest"
+  matrix:    
     - COMPOSER_FLAGS=""
   global:
     - XDEBUG_MODE=coverage
