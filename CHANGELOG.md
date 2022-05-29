@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.5.4 - 2022-05-29
+
+- Removed a lot of old paddle code or renamed it, especially paddleOptions
+- There is a now a Receipt Nova interface and a Livewire front-end for receipts too
+- Added documentation references to `TROUBLESHOOTING.md`
+- Had to comment out four tests as API testing not working yet
+- Payment method was added to the subscriptions and receipts table
+
 ## 0.5.3 - 2022-05-28
 
 - Added more information about local debugging especially with regards to changing the `.env` for Expose / ngrok

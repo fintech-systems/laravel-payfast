@@ -1,10 +1,26 @@
 # Troubleshooting
 
+## Naming conventions
+
+PayFast is written camel case - variables are written so:
+
+`payfastOptions`
+
+## Payfast Website Links
+
+Onsite payments reference:
+
+- https://developers.payfast.co.za/docs#onsite_payments
+
+### List of subscriptions
+
+- https://my.payfast.co.za/transactions/customer-subscriptions
+
 ## How to setup local dev environment
 
-Payfast heavily relies on a Webhook return so having non-public URLs like https://payfast.test won't work. You would need to use something like Expose from Beyond Code (or ngrok) to expose your local development environment.
+Payfast heavily relies on a Webhook return so having non-public URLs like https://payfast.test won't work. You need to use something like `Expose` or `ngrok` to expose your local development environment.
 
-If you're using Expose, this is how I set it up:
+If you're using `Expose`, this is how I set it up:
 
 In `.env`:
 

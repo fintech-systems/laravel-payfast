@@ -30,7 +30,7 @@ class CreateSubscriptionsTable extends Migration
             $table->string('payfast_status_text')->nullable();
             $table->string('token')->unique();
 
-            $table->string('payment_method');
+            $table->string('payment_method')->nullable();
 
             $table->string('status');
             $table->string('merchant_payment_id');

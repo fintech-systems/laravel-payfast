@@ -24,6 +24,7 @@ class CreateReceiptsTable extends Migration
             $table->string('amount_fee');
             $table->string('amount_net');
             $table->string('payfast_token')->nullable()->index();
+            $table->string('payment_method')->nullable();
             $table->string('billable_type')->nullable();
             $table->unsignedBigInteger('billable_id')->nullable();                        
             $table->string('order_id')->nullable();

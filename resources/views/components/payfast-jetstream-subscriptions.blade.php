@@ -21,7 +21,7 @@
                 </div>
             @endif
 
-            @if ($user->subscriptions()->onGracePeriod()->count() > 0)
+            @if ($user->subscriptions()->onGracePeriod()->count() == 1)
                 <h3 class="text-lg font-medium text-gray-900">
                     Your subscription is on a grace period.                    
                 </h3>
@@ -33,7 +33,7 @@
                 </div>
             @endif
 
-            @if ($user->subscriptions()->active()->count() > 0 and $user->subscriptions()->onGracePeriod()->count() == 0)
+            @if ($user->subscriptions()->active()->count() == 1 and $user->subscriptions()->onGracePeriod()->count() == 0)
                 <h3 class="text-lg font-medium text-gray-900">
                     You are subscribed to the
                     {{ $user->subscriptions()->active()->first()->name }} plan.

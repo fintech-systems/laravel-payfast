@@ -141,12 +141,12 @@ class Cashier
     }
 
     /**
-     * Get the default Paddle API options.
+     * Get the default PayFast API options.
      *
      * @param  array  $options
      * @return array
      */
-    public static function paddleOptions(array $options = [])
+    public static function payfastOptions(array $options = [])
     {
         return array_merge([
             'vendor_id' => (int) config('cashier.vendor_id'),

@@ -166,7 +166,6 @@ class WebhookController extends Controller
         }
 
         Log::info($message);
-
         ray($message)->orange();
 
         $billable = $this->findSubscription($payload['token'])->billable;
@@ -194,23 +193,27 @@ class WebhookController extends Controller
         } else {
             $message = "Applied the subscription payment.";
         }        
-        
         Log::notice($message);
-
         ray($message)->green();
+
+        $message = "Fetching and updating API status for token " . $payload['token'] . "...";
+        Log::info($message);
+        ray($message)->orange();
 
         // Dispatch a new API call to fetch the subscription information and update the status and next_bill_at
         $result = Payfast::fetchSubscription($payload['token']);
 
         Log::debug("Result of new API call to get current subscription status and next_bill_at");
-
         Log::debug($result);
-
         ray($result);
 
         $subscription = Subscription::whereToken($payload['token'])->first();
 
         $subscription->updatePayFastSubscription($result);
+
+        $message = "Fetched and updated API status for token " . $payload['token'] . ".";
+        Log::notice($message);
+        ray($message)->green();
         
         // PayFast requires a 200 response after a successful payment application
         return response('Subscription Payment Applied', 200);

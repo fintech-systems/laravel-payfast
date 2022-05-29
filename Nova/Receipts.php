@@ -2,26 +2,21 @@
 
 namespace App\Nova;
 
-use App\Nova\Actions\CancelSubscription;
-use App\Nova\Actions\FetchSubscriptionInformation;
-use Illuminate\Support\Str;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\Stack;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Subscription extends Resource
+class Receipts extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \FintechSystems\Payfast\Subscription::class;
+    public static $model = \FintechSystems\Payfast\Receipt::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -42,9 +37,10 @@ class Subscription extends Resource
      */
     public static $search = [
         'id',
-        'billable_id',
-        'token',
         'merchant_payment_id',
+        'payfast_payment_id',
+        'payfast_token',
+        'order_id',
     ];
 
     /**
@@ -58,39 +54,27 @@ class Subscription extends Resource
         return [
             ID::make(__('ID'), 'id')->sortable(),
 
-            Stack::make('User/Plan', [
-                Number::make('Billable ID'),
+            Text::make('Merchant Payment ID')->readonly(),
 
-                Text::make('Name'),
-            ]),
+            Number::make('Payfast Payment Id')->readonly(),
 
-            Stack::make('Token/Order', [
-                Text::make('Token')->displayUsing(function ($value) {
-                    return Str::limit($value, 8);
-                })->onlyOnIndex(),
+            Text::make('Payment Status')->readonly(),
 
-                Text::make('Merchant Payment ID'),
-            ]),
+            Text::make('Item Name')->readonly(),
 
-            Text::make('Token')->hideFromIndex(),
+            Text::make('Item Description')->readonly(),
 
-            Stack::make('Status/Payment', [
-                Text::make('Status'),
+            Number::make('Amount Gross')->readonly(),
 
-                Text::make('Payment Status'),
-            ]),
+            Number::make('Amount Fee')->readonly(),
 
-            Text::make('Subscription Status')->sortable(),
+            Number::make('Amount Net')->readonly(),
 
-            Date::make('Next Bill At'),
+            Text::make('Payfast Token')->readonly(),
 
-            Date::make('Next Run At'),
+            Text::make('Order ID')->readonly(),
 
-            DateTime::make('Ends At'),
-
-            DateTime::make('Cancelled At'),
-
-            DateTime::make('Trial Ends At'),
+            DateTime::make('Paid At')->readonly(),
         ];
     }
 
@@ -135,9 +119,6 @@ class Subscription extends Resource
      */
     public function actions(Request $request)
     {
-        return [
-            new FetchSubscriptionInformation,
-            new CancelSubscription
-        ];
+        return [];
     }
 }

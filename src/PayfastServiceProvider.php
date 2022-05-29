@@ -3,6 +3,7 @@
 namespace FintechSystems\Payfast;
 
 use FintechSystems\Payfast\Components\PayfastJetstreamSubscriptions;
+use FintechSystems\Payfast\Components\PayfastJetstreamReceipts;
 use FintechSystems\Payfast\PayFastApi as FintechSystemsPayFastApi;
 use Livewire\Livewire;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +30,8 @@ class PayfastServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         Livewire::component('payfast-jetstream-subscriptions', PayfastJetstreamSubscriptions::class);
+        
+        Livewire::component('payfast-jetstream-receipts', PayfastJetstreamReceipts::class);
     }
 
     public function register()
@@ -50,7 +53,7 @@ class PayfastServiceProvider extends ServiceProvider
         ]));
 
         $this->app->bind('payfast-api', function ($app) {
-            ray('Binding 3rd party API to my API');
+            ray('Binding 3rd party API to the PayFast API');
             
             $client = new PayFastApi([
                     'merchantId' => config('payfast.merchant_id'),            
@@ -60,12 +63,6 @@ class PayfastServiceProvider extends ServiceProvider
 
             return new FintechSystemsPayFastApi($client);
         });
-
-        // $this->app->bind('payfast-api', fn() => new PayFastApi([
-        //     'merchantId' => config('payfast.merchant_id'),            
-        //     'passPhrase' => config('payfast.passphrase'),
-        //     'testMode' => config('payfast.testmode'),            
-        // ]));
 
     }
 }

@@ -369,7 +369,7 @@ class Subscription extends Model
             throw new Exception('Charge name has a maximum length of 50 characters.');
         }
 
-        $payload = $this->billable->paddleOptions([
+        $payload = $this->billable->payfastOptions([
             'amount' => $amount,
             'charge_name' => $name,
         ]);
@@ -597,7 +597,7 @@ class Subscription extends Model
     {
         $result = Cashier::post('/subscription/modifiers', array_merge([
             'subscription_id' => $this->paddle_id,
-        ], $this->billable->paddleOptions()));
+        ], $this->billable->payfastOptions()));
 
         return collect($result['response'])->map(fn(array $modifier) => new Modifier($this, $modifier));
     }
@@ -655,7 +655,7 @@ class Subscription extends Model
      */
     public function cancelAt(DateTimeInterface $endsAt)
     {
-        $payload = $this->billable->paddleOptions([
+        $payload = $this->billable->payfastOptions([
             'subscription_id' => $this->paddle_id,
         ]);
 
@@ -772,7 +772,7 @@ class Subscription extends Model
 
         return $this->payfastInfo = Cashier::post('/subscription/users', array_merge([
             'subscription_id' => $this->paddle_id,
-        ], $this->billable->paddleOptions()))['response'][0];
+        ], $this->billable->payfastOptions()))['response'][0];
     }
 
     /**
