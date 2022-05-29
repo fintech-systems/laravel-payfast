@@ -13,7 +13,7 @@
             <table width="100%">
                 <thead class="bg-gray-50">
                     <tr>
-                        <td nowrap><strong>Receipt ID</strong></th>
+                        <td nowrap><strong>ID</strong></th>
                         <td><strong>Item</strong></td>
                         <td style="text-align:right"><strong>Amount</strong></th>
                         <td style="padding-left:10px"><strong>Status</strong></th>                        

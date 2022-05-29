@@ -37,6 +37,10 @@ expose share --subdomain=payfast --server=eu-1 https://payfast-test.test
 
 In my case I have the paid tier sparing me the schlep of always working with a new URL.
 
+When testing, you can continue to use https://payfast-test.test instead of the Expose URL since Expose is only required for the webhook.
+
+### Expose error `failed during DNS lookup`
+
 With Expose, if you're using Linux and Laravel Valet for Linux and you get this error:
 
 ```

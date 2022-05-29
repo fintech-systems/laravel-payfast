@@ -42,23 +42,27 @@ If you're using subscriptions, run the migrations:
 php artisan migrate
 ```
 
-## Setup
+## Livewire Setup
 
-In resources/views/profiles/show.php, add this to display the subscription dialogue:
+In `resources/views/profiles/show.php`, add the two Livewire components that displays subscriptions and receipts.
 
 ```
-<!-- Subscriptions -->
-    <x-jet-section-border />
-    
-    <div class="mt-10 sm:mt-0">
-        @livewire('payfast-jetstream-subscriptions')
-    </div>
-    
-    <x-jet-section-border />
-<!-- End Subscriptions -->
-```
+    <!-- Subscriptions -->
+        <div class="mt-10 sm:mt-0">
+            @livewire('payfast-jetstream-subscriptions')
+        </div>
+                
+        <x-jet-section-border />
+    <!-- End Subscriptions -->
 
-Please note, views must be published first
+    <!-- Receipts -->
+        <div class="mt-10 sm:mt-0">
+            @livewire('payfast-jetstream-receipts')
+        </div>
+    
+    <x-jet-section-border />
+    <!-- End Receipts -->
+```
 
 ## Usage
 
@@ -133,6 +137,10 @@ composer require fintech-systems/laravel-payfast
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Screenshots
+
+[Livewire Subscriptions and Receipts Components](../screenshots/subscriptions_and_receipts.jpeg)
 
 ## Credits
 
