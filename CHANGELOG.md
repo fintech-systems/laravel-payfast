@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.6.2 - 2022-05-30
+
+- More fixes after rename this time in service provider
+
 ## 0.6.1 - 2022-05-30
 
 - Fix namespacing after rename

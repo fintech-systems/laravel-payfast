@@ -7,9 +7,9 @@ use PayFast\PayFastApi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use FintechSystems\Payfast\Components\PayfastJetstreamReceipts;
+use FintechSystems\Payfast\Components\JetstreamReceipts;
 use FintechSystems\Payfast\PayFastApi as FintechSystemsPayFastApi;
-use FintechSystems\Payfast\Components\PayfastJetstreamSubscriptions;
+use FintechSystems\Payfast\Components\JetstreamSubscriptions;
 
 class PayfastServiceProvider extends ServiceProvider
 {
@@ -31,9 +31,9 @@ class PayfastServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        Livewire::component('payfast-jetstream-subscriptions', PayfastJetstreamSubscriptions::class);
+        Livewire::component('jetstream-subscriptions', JetstreamSubscriptions::class);
 
-        Livewire::component('payfast-jetstream-receipts', PayfastJetstreamReceipts::class);
+        Livewire::component('jetstream-receipts', JetstreamReceipts::class);
 
         Blade::if('subscriptionGracePeriod', function () {
             return Auth::user()->subscriptions()->onGracePeriod()->count() == 1 ? true : false;
