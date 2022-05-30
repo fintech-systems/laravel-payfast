@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-payfast-onsite` will be documented in this file.
 
+## 0.8.0 - 2022-05-30
+
+- Webhook will now store the subscription using the word "default"
+- Completely redid the Livewire blade and used boilerplate as reference
+
 ## 0.7.2 - 2022-05-30
 
 - Simplified the way the Livewire blade determines subscription status

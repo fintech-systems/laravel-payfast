@@ -132,7 +132,7 @@ class WebhookController extends Controller
         $subscription = $customer->subscriptions()->create([
             'token' => $payload['token'],
             'plan_id' => $payload['custom_int2'],
-            'name' => $payload['custom_str2'],
+            'name' => 'default', // See Laravel Cashier Stripe and Paddle docs - "internal name of the subscription"
             'merchant_payment_id' => $payload['m_payment_id'],
             'payment_status' => $payload['payment_status'],
             'status' => Subscription::STATUS_ACTIVE,
