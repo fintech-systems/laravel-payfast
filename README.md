@@ -1,16 +1,17 @@
 ## About Laravel PayFast Onsite
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/fintech-systems/laravel-payfast-onsite) [![Build Status](https://app.travis-ci.com/fintech-systems/laravel-payfast-onsite.svg?branch=main)](https://app.travis-ci.com/fintech-systems/laravel-payfast-onsite) ![GitHub](https://img.shields.io/github/license/fintech-systems/laravel-payfast-onsite)
 
-A [PayFast Onsite Payments](https://developers.payfast.co.za/docs#onsite_payments) implementation for Laravel designed to easy subscription billing. Livewire views are included.
+A [PayFast Onsite Payments](https://developers.payfast.co.za/docs#onsite_payments) implementation for Laravel designed to easy subscription billing. [Livewire](https://laravel-livewire.com/) views are included.
 
-** THIS IS BETA SOFTWARE **
-There may be some bugs but the core functionality works.
+**THIS IS BETA SOFTWARE**
+
+- There may be some bugs but the core functionality should work.
 
 Requirements:
 
 - PHP 8.0
 - Laravel
-- A PayFast account
+- A [PayFast account](https://www.payfast.co.za/registration)
 
 ## Installation
 
@@ -20,32 +21,38 @@ Install the package via composer:
 composer require fintech-systems/laravel-payfast-onsite
 ```
 
-## Publish Laravel configuration and views
+## Publish Configuration and Views
 
 Publish the config file with:
 ```bash
 php artisan vendor:publish --provider="FintechSystems\Payfast\PayfastServiceProvider" --tag="payfast-config"
 ```
 
-Publish default Success, Cancelled, and Notify (ITN) views. This will also publish a Jetstream component that allows you to initiate a new subscription:
+Publish the Success and Cancelled views and the Livewire components for subscriptions and receipts.
 
 ```bash
 php artisan vendor:publish --provider="FintechSystems\Payfast\PayfastServiceProvider" --tag="payfast-views"
 ```
-Optionally publish a Laravel Nova Subscription Resource to show resource events received via the callback
+
+### Nova Integration
+
+Optionally publish Laravel Nova Subscription and Receipts Resources
 
 ```bash
 php artisan vendor:publish --provider="FintechSystems\Payfast\PayfastServiceProvider" --tag="payfast-nova-resource"
 ```
 
-Run the migrations:
+## Migrations
+
+A migration is needed to create Customers, Orders, Receipts and Subscriptions tables:
+
 ```bash
 php artisan migrate
 ```
 
-## Config Setup
+## Example Configuration
 
-The `config/payfast.php` holds key information to display subscriptions:
+`config/payfast.php`:
 
 ```php
 <?php
@@ -65,15 +72,15 @@ return [
             'name' => 'Monthly R 99',
             'start_date' => \Carbon\Carbon::now()->addDay()->format('Y-m-d'),
             'payfast_frequency' => 3,
-            'initial_amount' => 5.01,
-            'recurring_amount' => 5.02,
+            'initial_amount' => 5.99,
+            'recurring_amount' => 5.99,
         ],
         6 => [
             'name' => 'Yearly R 1089',
             'start_date' => \Carbon\Carbon::now()->format('Y-m-d'),
             'payfast_frequency' => 6,
-            'initial_amount' => 5.03,
-            'recurring_amount' => 5.04,
+            'initial_amount' => 6.89,
+            'recurring_amount' => 6.89,
         ]
     ],
     'cancelation_reasons' => [
@@ -86,12 +93,16 @@ return [
 
 ## Livewire Setup
 
-In `resources/views/profiles/show.php`, add the two Livewire components that displays subscriptions and receipts.
+### Jetstream
+
+If you are using [Laravel Jetstream](https://jetstream.laravel.com), you can easily modify the profile page to include subscription information by modifying the file below.
+
+In `resources/views/profiles/show.php`, add the Livewire components:
 
 ```
     <!-- Subscriptions -->
         <div class="mt-10 sm:mt-0">
-            @livewire('payfast-jetstream-subscriptions')
+            @livewire('jetstream-subscriptions')
         </div>
                 
         <x-jet-section-border />
@@ -99,7 +110,7 @@ In `resources/views/profiles/show.php`, add the two Livewire components that dis
 
     <!-- Receipts -->
         <div class="mt-10 sm:mt-0">
-            @livewire('payfast-jetstream-receipts')
+            @livewire('jetstream-receipts')
         </div>
     
     <x-jet-section-border />

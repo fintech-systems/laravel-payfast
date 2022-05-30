@@ -15,15 +15,15 @@ return [
             'name' => 'Monthly R 99',
             'start_date' => \Carbon\Carbon::now()->addDay()->format('Y-m-d'),
             'payfast_frequency' => 3,
-            'initial_amount' => 5.01,
-            'recurring_amount' => 5.02,
+            'initial_amount' => 5.99, // For card updates or reactivatitions, this should be zero
+            'recurring_amount' => 5.99,
         ],
         6 => [
             'name' => 'Yearly R 1089',
             'start_date' => \Carbon\Carbon::now()->format('Y-m-d'),
             'payfast_frequency' => 6,
-            'initial_amount' => 5.03,
-            'recurring_amount' => 5.04,
+            'initial_amount' => 6.89, // For card updates or reactivatitions, this should be zero
+            'recurring_amount' => 6.89,
         ]
     ],
     'cancelation_reasons' => [
