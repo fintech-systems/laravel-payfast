@@ -34,10 +34,7 @@ class PayfastServiceProvider extends ServiceProvider
         Livewire::component('jetstream-subscriptions', JetstreamSubscriptions::class);
 
         Livewire::component('jetstream-receipts', JetstreamReceipts::class);
-
-        Blade::if('subscriptionGracePeriod', function () {
-            return Auth::user()->subscriptions()->onGracePeriod()->count() == 1 ? true : false;
-        });
+        
     }
 
     public function register()

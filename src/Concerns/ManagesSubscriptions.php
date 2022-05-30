@@ -15,6 +15,8 @@ trait ManagesSubscriptions
 
     /**
      * Get all of the subscriptions for the Billable model.
+     * 
+     * Note: Sorted by `created_at` meaning the last subscription will always be returned.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */

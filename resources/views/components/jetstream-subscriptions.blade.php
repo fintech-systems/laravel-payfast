@@ -20,21 +20,27 @@
                     </p>
                 </div>
             @endif
-
-            {{-- @if ($user->subscriptions()->onGracePeriod()->count() == 1) --}}
-            @subscriptionGracePeriod
+            
+            @if ( $user->subscriptions()->active()->first()->cancelled() )
                 <h3 class="text-lg font-medium text-gray-900">
-                    Your subscription was cancelled on the {{ $user->subscriptions()->active()->first()->cancelled_at->format('Y-m-d') }} and is in the grace period.                    
+                    Your subscription was cancelled {{ $user->subscriptions()->cancelled()->first()->cancelled_at->format('Y-m-d') ?? 'error' }}.
                 </h3>
                 <div class="mt-3 max-w-xl text-sm text-gray-600">
+                    @if (\Carbon\Carbon::now()->diffInDays($user->subscriptions()->active()->first()->ends_at->format('Y-m-d')) != 0) 
                     <p>
-                        The last day of your subscription is
+                        There are {{ \Carbon\Carbon::now()->diffInDays($user->subscriptions()->active()->first()->ends_at->format('Y-m-d')) }} 
+                        days left of your subscription and the last day is 
                         {{ $user->subscriptions()->active()->first()->ends_at->format('Y-m-d') }}.
                     </p>
+                    @else
+                    <p>
+                        Today is the last day of your subscription.
+                    </p>
+                    @endif
                 </div>
-            @endsubscriptionGracePeriod
+            @endif
 
-            @if ($user->subscriptions()->active()->count() == 1 and $user->subscriptions()->onGracePeriod()->count() == 0)
+            @if ( $user->subscriptions()->active()->first()->cancelled() != true )
                 <h3 class="text-lg font-medium text-gray-900">
                     You are subscribed to the
                     {{ $user->subscriptions()->active()->first()->name }} plan.
@@ -42,7 +48,7 @@
                 <div class="mt-3 max-w-xl text-sm text-gray-600">
                     <p>
                         The next payment is due
-                        {{ $user->subscriptions()->active()->first()->next_bill_at->format('Y-m-d') }}.
+                        {{ $user->subscriptions()->active()->first()->next_bill_at->format('Y-m-d') ?? 'error' }}.
                     </p>
                 </div>
             @endif
@@ -61,7 +67,7 @@
 
         <!-- Subscription Action Buttons -->
         <div class="mt-5">            
-            @if ($user->subscriptions()->active()->count() > 0 && $user->subscriptions()->onGracePeriod()->count() != 1)
+            @if ( $user->subscriptions()->active()->first()->cancelled() != true )
                 <x-jet-secondary-button
                     style="color: red;"
                     wire:click="confirmCancelSubscription"
@@ -92,11 +98,11 @@
                         style="color: green;"
                         wire:click="displayCreateSubscription"
                         >
-                        @subscriptionGracePeriod
-                        {{ __('Resubscribe') }}
+                        @if ( $user->subscriptions()->active()->first()->cancelled() )
+                            {{ __('Resubscribe') }}
                         @else
-                        {{ __('Subscribe') }}
-                        @endsubscriptionGracePeriod
+                            {{ __('Subscribe') }}
+                        @endif
                     </x-jet-secondary-button>
 
                     <div wire:loading

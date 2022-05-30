@@ -85,7 +85,7 @@ class JetstreamSubscriptions extends Component
             $subscriptionStartsAt = \Carbon\Carbon::now()->format('Y-m-d');
         }
 
-        if (Auth::user()->subscriptions()->onGracePeriod()->count() == 1) {
+        if ( Auth::user()->subscriptions()->active()->first()->cancelled() ) {
             $this->mergeFields = array_merge($this->mergeFields, ['amount' => 0]);
         }
         
