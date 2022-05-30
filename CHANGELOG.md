@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-payfast-onsite` will be documented in this file.
 
-## 0.7.1 - 2022-05-30
+## 0.7.2 - 2022-05-30
 
 - Simplified the way the Livewire blade determines subscription status
 
