@@ -1,7 +1,7 @@
 ## About Laravel PayFast Onsite
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/fintech-systems/laravel-payfast-onsite) [![Build Status](https://app.travis-ci.com/fintech-systems/laravel-payfast-onsite.svg?branch=main)](https://app.travis-ci.com/fintech-systems/laravel-payfast-onsite) ![GitHub](https://img.shields.io/github/license/fintech-systems/laravel-payfast-onsite)
 
-A [PayFast Onsite Payments](https://developers.payfast.co.za/docs#onsite_payments) implementation for Laravel designed to easy subscription billing. [Livewire](https://laravel-livewire.com/) views are included.
+A [PayFast Onsite Payments](https://developers.payfast.co.za/docs#onsite_payments) implementation for Laravel designed to ease subscription billing. [Livewire](https://laravel-livewire.com/) views are included.
 
 **THIS IS BETA SOFTWARE**
 
