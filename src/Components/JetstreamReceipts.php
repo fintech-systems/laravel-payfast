@@ -25,6 +25,6 @@ class PayfastJetstreamReceipts extends Component
      */
     public function render()
     {
-        return view('vendor.payfast.components.payfast-jetstream-receipts');
+        return view('vendor.payfast.components.jetstream-receipts');
     }
 }

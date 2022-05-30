@@ -1,22 +1,23 @@
-## About Laravel PayFast
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/fintech-systems/laravel-payfast) [![Build Status](https://app.travis-ci.com/fintech-systems/laravel-payfast.svg?branch=main)](https://app.travis-ci.com/fintech-systems/laravel-payfast) ![GitHub](https://img.shields.io/github/license/fintech-systems/laravel-payfast)
+## About Laravel PayFast Onsite
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/fintech-systems/laravel-payfast-onsite) [![Build Status](https://app.travis-ci.com/fintech-systems/laravel-payfast-onsite.svg?branch=main)](https://app.travis-ci.com/fintech-systems/laravel-payfast-onsite) ![GitHub](https://img.shields.io/github/license/fintech-systems/laravel-payfast-onsite)
 
-A PayFast API designed to run standalone or part of a Laravel Application
+A [PayFast Onsite Payments](https://developers.payfast.co.za/docs#onsite_payments) implementation for Laravel designed to easy subscription billing. Livewire views are included.
 
-** THIS IS PRE-RELEASE SOFTWARE **
+** THIS IS BETA SOFTWARE **
+There may be some bugs but the core functionality works.
 
 Requirements:
 
 - PHP 8.0
 - Laravel
-- A Payfast account
+- A PayFast account
 
 ## Installation
 
 Install the package via composer:
 
 ```bash
-composer require fintech-systems/laravel-payfast
+composer require fintech-systems/laravel-payfast-onsite
 ```
 
 ## Publish Laravel configuration and views
@@ -37,9 +38,50 @@ Optionally publish a Laravel Nova Subscription Resource to show resource events 
 php artisan vendor:publish --provider="FintechSystems\Payfast\PayfastServiceProvider" --tag="payfast-nova-resource"
 ```
 
-If you're using subscriptions, run the migrations:
+Run the migrations:
 ```bash
 php artisan migrate
+```
+
+## Config Setup
+
+The `config/payfast.php` holds key information to display subscriptions:
+
+```php
+<?php
+
+return [
+    'merchant_id' => env('PAYFAST_MERCHANT_ID', '10004002'),
+    'merchant_key' => env('PAYFAST_MERCHANT_KEY', 'q1cd2rdny4a53'),
+    'passphrase' => env('PAYFAST_PASSPHRASE', 'payfast'),
+    'testmode' => env('PAYFAST_TESTMODE', true),        
+    'return_url' => env('PAYFAST_RETURN_URL', config('app.url') . '/payfast/success'),
+    'cancel_url' => env('PAYFAST_CANCEL_URL', config('app.url') . '/payfast/cancel'),
+    'notify_url' => env('PAYFAST_NOTIFY_URL', config('app.url') . '/payfast/webhook'),
+    'card_update_link_css' => env('CARD_UPDATE_LINK_CSS', 'inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition'),
+    'card_updated_return_url' => env('CARD_UPDATED_RETURN_URL', config('app.url') . '/user/profile'),
+    'plans' => [
+        3 => [
+            'name' => 'Monthly R 99',
+            'start_date' => \Carbon\Carbon::now()->addDay()->format('Y-m-d'),
+            'payfast_frequency' => 3,
+            'initial_amount' => 5.01,
+            'recurring_amount' => 5.02,
+        ],
+        6 => [
+            'name' => 'Yearly R 1089',
+            'start_date' => \Carbon\Carbon::now()->format('Y-m-d'),
+            'payfast_frequency' => 6,
+            'initial_amount' => 5.03,
+            'recurring_amount' => 5.04,
+        ]
+    ],
+    'cancelation_reasons' => [
+        'Too expensive',
+        'Lacks features',
+        'Not what I expected',
+    ],
+];
 ```
 
 ## Livewire Setup

@@ -47,7 +47,7 @@ class PayfastJetstreamSubscriptions extends Component
     }
 
     /**
-     * Update card TBA direct, but first have to work out present active subscription
+     * Update card
      */
     public function updateCard()
     {
@@ -57,9 +57,7 @@ class PayfastJetstreamSubscriptions extends Component
 
         ray($url);
 
-        return redirect()->to($url);
-
-        // ray($activeSubscription);
+        return redirect()->to($url);        
     }
     
     /**
@@ -73,7 +71,7 @@ class PayfastJetstreamSubscriptions extends Component
     public function displayCreateSubscription()
     {
         if ($this->user->onGenericTrial()) {
-            // TBA check if monthly or yearly
+            // TODO check if monthly or yearly before moving date forward
             $subscriptionStartsAt =  $this->user->trialEndsAt()->addMonth()->format('Y-m-d');
         }
 
@@ -101,6 +99,6 @@ class PayfastJetstreamSubscriptions extends Component
      */
     public function render()
     {
-        return view('vendor.payfast.components.payfast-jetstream-subscriptions');
+        return view('vendor.payfast.components.jetstream-subscriptions');
     }
 }

@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.6.0 - 2022-05-30
+
+- Dropped the word 'Payfast' from the Livewire components
+- Renamed repo to laravel-payfast-onsite
+- Added to the README to specify a better description and also added `config/payfast.php`
+
 ## 0.5.5 - 2022-05-29
 
 - Added an update card method in the Livewire component
