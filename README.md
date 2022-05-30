@@ -99,22 +99,22 @@ I have modelled some Livewire views to fit into a [Laravel Jetstream](https://je
 
 Modify `resources/views/profiles/show.php` and add these two Livewire components:
 
-```
-    <!-- Subscriptions -->
-        <div class="mt-10 sm:mt-0">
-            @livewire('jetstream-subscriptions')
-        </div>
-                
-        <x-jet-section-border />
-    <!-- End Subscriptions -->
-
-    <!-- Receipts -->
-        <div class="mt-10 sm:mt-0">
-            @livewire('jetstream-receipts')
-        </div>
-    
+```php
+<!-- Subscriptions -->
+    <div class="mt-10 sm:mt-0">
+        @livewire('jetstream-subscriptions')
+    </div>
+            
     <x-jet-section-border />
-    <!-- End Receipts -->
+<!-- End Subscriptions -->
+
+<!-- Receipts -->
+    <div class="mt-10 sm:mt-0">
+        @livewire('jetstream-receipts')
+    </div>
+
+<x-jet-section-border />
+<!-- End Receipts -->
 ```
 
 ## Usage
