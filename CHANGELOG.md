@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.6.1 - 2022-05-30
+
+- Fix namespacing after rename
+
 ## 0.6.0 - 2022-05-30
 
 - Dropped the word 'Payfast' from the Livewire components
