@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-payfast-onsite` will be documented in this file.
 
+## 0.7.1 - 2022-05-30
+
+- Simplified the way the Livewire blade determines subscription status
+
 ## 0.7.0 - 2022-05-30
 
 - Change signature for createOnsitePayments to accept merge fields and updated README.md
