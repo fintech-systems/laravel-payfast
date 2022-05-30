@@ -164,29 +164,6 @@ Route::get('/update-card', function() {
 vendor/bin/phpunit
 ```
 
-### Local Editing
-
-For local editing, add this to `composer.json`:
-
-```json
-"repositories" : [
-        {
-            "type": "path",
-            "url": "../laravel-payfast"
-        }
-    ]
-```
-
-Then in `require` section:
-
-```json
-"fintech-systems/laravel-payfast": "dev-main",
-```
-
-```bash
-composer require fintech-systems/laravel-payfast
-```
-
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

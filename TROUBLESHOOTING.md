@@ -49,7 +49,32 @@ Connection to tls://eu-1.sharedwithexpose.com:443 failed during DNS lookup
 
 Temporary comment out `127.0.0.1` in `/etc/resolv.conf` and try again.
 
+### Local Editing
+
+For local editing, add this to `composer.json`:
+
+```json
+"repositories" : [
+        {
+            "type": "path",
+            "url": "../laravel-payfast"
+        }
+    ]
+```
+
+Then in `require` section:
+
+```json
+"fintech-systems/laravel-payfast": "dev-main",
+```
+
+```bash
+composer require fintech-systems/laravel-payfast-onsite
+```
+
 ## After Payfast returns, the Livewire subscription information isn't updated
+
+Check inspect element to see if the event that tell the page to update is fired.
 
 Make sure this stack command is in your `app.blade.php`, somewhere below `@livewireScripts`:
 
