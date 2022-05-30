@@ -24,11 +24,11 @@
             {{-- @if ($user->subscriptions()->onGracePeriod()->count() == 1) --}}
             @subscriptionGracePeriod
                 <h3 class="text-lg font-medium text-gray-900">
-                    Your subscription is on a grace period.                    
+                    Your subscription was cancelled on the {{ $user->subscriptions()->active()->first()->cancelled_at->format('Y-m-d') }} and is in the grace period.                    
                 </h3>
                 <div class="mt-3 max-w-xl text-sm text-gray-600">
                     <p>
-                        Your subscription will end on 
+                        The last day of your subscription is
                         {{ $user->subscriptions()->active()->first()->ends_at->format('Y-m-d') }}.
                     </p>
                 </div>

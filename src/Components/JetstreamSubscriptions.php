@@ -85,6 +85,10 @@ class JetstreamSubscriptions extends Component
             $subscriptionStartsAt = \Carbon\Carbon::now()->format('Y-m-d');
         }
 
+        if (Auth::user()->subscriptions()->onGracePeriod()->count() == 1) {
+            $this->mergeFields = array_merge($this->mergeFields, ['amount' => 0]);
+        }
+        
         $this->identifier = Payfast::createOnsitePayment(
             (int) $this->plan,
             $subscriptionStartsAt,
@@ -96,9 +100,7 @@ class JetstreamSubscriptions extends Component
 
     public function mount()
     {
-        $this->user = Auth::user();
-
-        ray($this->mergeFields);
+        $this->user = Auth::user();        
     }
 
     /**
