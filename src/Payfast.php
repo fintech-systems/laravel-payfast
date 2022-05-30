@@ -124,6 +124,9 @@ class Payfast implements PaymentGateway
             'custom_int2' => $planId,
             'custom_str2' => $plan['name'],
             'item_name' => config('app.name') . " $recurringType Subscription",
+            'name_first' => Auth::user()->first_name,
+            'name_last' => Auth::user()->last_name,
+            'item_description' => "Access to the Best Agent Rankings Website for " . Auth::user()->first_name . ' '  . Auth::user()->last_name,
             'email_address' => Auth::user()->email,
         ];
 

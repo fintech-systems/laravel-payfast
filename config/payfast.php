@@ -13,7 +13,7 @@ return [
     'plans' => [
         3 => [
             'name' => 'Monthly R 99',
-            'start_date' => \Carbon\Carbon::now()->addDay()->format('Y-m-d'),
+            'start_date' => \Carbon\Carbon::now()->format('Y-m-d'),
             'payfast_frequency' => 3,
             'initial_amount' => 5.99, // For card updates or reactivatitions, this should be zero
             'recurring_amount' => 5.99,

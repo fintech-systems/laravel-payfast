@@ -75,9 +75,13 @@ class JetstreamSubscriptions extends Component
             $subscriptionStartsAt =  $this->user->trialEndsAt()->addMonth()->format('Y-m-d');
         }
 
-        if ($this->user->activeSubscription()->onGracePeriod()) {
+        if ((null !== $this->user->activeSubscription()) && $this->user->activeSubscription()->onGracePeriod()) {
             $subscriptionStartsAt = $this->user->activeSubscription()->ends_at->addDay()->format('Y-m-d');
-        }            
+        }
+
+        if (!isset($subscriptionStartsAt)) {
+            $subscriptionStartsAt = \Carbon\Carbon::now()->format('Y-m-d');
+        }
 
         $this->identifier = Payfast::createOnsitePayment(
             (int) $this->plan,
@@ -89,7 +93,7 @@ class JetstreamSubscriptions extends Component
 
     public function mount()
     {
-        $this->user = Auth::user();        
+        $this->user = Auth::user();
     }
 
     /**

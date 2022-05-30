@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-payfast` will be documented in this file.
 
+## 0.6.3 - 2022-05-30
+
+- Readme updates
+- Fixed more composer stuff after rename. Abandoning `laravel-payfast` on packagist in favour of `laravel-payfast-onsite`
+
 ## 0.6.2 - 2022-05-30
 
 - More fixes after rename this time in service provider

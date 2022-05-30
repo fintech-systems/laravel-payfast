@@ -95,9 +95,9 @@ return [
 
 ### Jetstream
 
-If you are using [Laravel Jetstream](https://jetstream.laravel.com), you can easily modify the profile page to include subscription information by modifying the file below.
+I have modelled some Livewire views to fit into a [Laravel Jetstream](https://jetstream.laravel.com) user profile page.
 
-In `resources/views/profiles/show.php`, add the Livewire components:
+Modify `resources/views/profiles/show.php` and add these two Livewire components:
 
 ```
     <!-- Subscriptions -->
