@@ -77,15 +77,16 @@ class JetstreamSubscriptions extends Component
             $subscriptionStartsAt =  $this->user->trialEndsAt()->addMonth()->format('Y-m-d');
         }
 
-        if ((null !== $this->user->activeSubscription()) && $this->user->activeSubscription()->onGracePeriod()) {
-            $subscriptionStartsAt = $this->user->activeSubscription()->ends_at->addDay()->format('Y-m-d');
+        if ($this->user->subscribed('default') && $this->user->subscription('default')->onGracePeriod()) {
+            $subscriptionStartsAt = $this->user->subscribed('default')->ends_at->addDay()->format('Y-m-d');
         }
 
         if (!isset($subscriptionStartsAt)) {
             $subscriptionStartsAt = \Carbon\Carbon::now()->format('Y-m-d');
         }
 
-        if ( Auth::user()->subscriptions()->active()->first()->cancelled() ) {
+        // TBA && check if date is in the past?
+        if ( $this->user->subscribed('default') && $this->user->subscription('default')->onGracePeriod() ) {
             $this->mergeFields = array_merge($this->mergeFields, ['amount' => 0]);
         }
         

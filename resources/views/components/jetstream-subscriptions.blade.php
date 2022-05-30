@@ -26,7 +26,7 @@
                 @else
                 {{-- No Subscription --}}
                 <h3 class="text-lg font-medium text-gray-900">
-                        You are not currently subscribed to any plan.
+                        You are not currently subscribed to a plan.
                     </h3>
                     <div class="mt-3 max-w-xl text-sm text-gray-600">
                         <p>
@@ -60,8 +60,8 @@
                 @else
                     {{-- Subscribed --}}
                     <h3 class="text-lg font-medium text-gray-900">
-                        You are subscribed to the
-                        {{ $user->subscriptions()->active()->first()->name }} plan.
+                        You are subscribed to the                         
+                        {{ config('payfast.plans')[$user->subscription('default')->plan_id]['name'] }} plan.
                     </h3>
                     <div class="mt-3 max-w-xl text-sm text-gray-600">
                         <p>
@@ -111,10 +111,10 @@
         </div>
         <!-- End Subscription Action Buttons -->
 
-        <!-- Create Subscription Modal -->
+        <!-- Launch Payfast Subscription Modal -->
         @if ($displayingCreateSubscription)
             <script>
-                console.log('Launching Payfast onsite payment modal')
+                console.log('Launching PayFast onsite payment modal')
 
                 window.payfast_do_onsite_payment({
                     "uuid": "{{ $identifier }}"
