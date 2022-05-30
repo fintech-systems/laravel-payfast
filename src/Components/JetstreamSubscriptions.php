@@ -6,7 +6,7 @@ use FintechSystems\Payfast\Facades\Payfast;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class PayfastJetstreamSubscriptions extends Component
+class JetstreamSubscriptions extends Component
 {
     public $user;
 

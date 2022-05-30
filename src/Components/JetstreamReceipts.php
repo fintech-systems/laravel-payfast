@@ -5,7 +5,7 @@ namespace FintechSystems\Payfast\Components;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class PayfastJetstreamReceipts extends Component
+class JetstreamReceipts extends Component
 {
     public $user;
 
