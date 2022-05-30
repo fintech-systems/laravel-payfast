@@ -1,11 +1,15 @@
 # Changelog
 
-All notable changes to `laravel-payfast` will be documented in this file.
+All notable changes to `laravel-payfast-onsite` will be documented in this file.
+
+## 0.7.0 - 2022-05-30
+
+- Change signature for createOnsitePayments to accept merge fields and updated README.md
 
 ## 0.6.3 - 2022-05-30
 
 - Readme updates
-- Fixed more composer stuff after rename. Abandoning `laravel-payfast` on packagist in favour of `laravel-payfast-onsite`
+- Fixed more composer stuff after rename. Abandoning `laravel-payfast` on Packagist in favour of `laravel-payfast-onsite`
 
 ## 0.6.2 - 2022-05-30
 

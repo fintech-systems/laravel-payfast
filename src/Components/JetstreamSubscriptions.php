@@ -20,6 +20,8 @@ class JetstreamSubscriptions extends Component
 
     public $updateCardLink;
 
+    public $mergeFields;
+
     protected $listeners = [
         'billingUpdated' => '$refresh',        
     ];
@@ -85,7 +87,8 @@ class JetstreamSubscriptions extends Component
 
         $this->identifier = Payfast::createOnsitePayment(
             (int) $this->plan,
-            $subscriptionStartsAt
+            $subscriptionStartsAt,
+            $this->mergeFields
         );
 
         $this->displayingCreateSubscription = true;
@@ -94,6 +97,8 @@ class JetstreamSubscriptions extends Component
     public function mount()
     {
         $this->user = Auth::user();
+
+        ray($this->mergeFields);
     }
 
     /**

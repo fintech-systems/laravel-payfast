@@ -97,15 +97,21 @@ return [
 
 I have modelled some Livewire views to fit into a [Laravel Jetstream](https://jetstream.laravel.com) user profile page.
 
-Modify `resources/views/profiles/show.php` and add these two Livewire components:
+When calling the Livewire component, you can override any [PayFast form field](https://developers.payfast.co.za/docs#step_1_form_fields) by specifying a `mergeFields` array.
+
+Example modification Jetstream Livewire's `resources/views/profiles/show.php`:
 
 ```php
 <!-- Subscriptions -->
-    <div class="mt-10 sm:mt-0">
-        @livewire('jetstream-subscriptions')
-    </div>
-            
-    <x-jet-section-border />
+<div class="mt-10 sm:mt-0">    
+    @livewire('jetstream-subscriptions', ['mergeFields' => [
+            'name_first' => $user->name,
+            'name_last' => $user->name,
+            'item_description' => 'Subscription to Online Service'
+        ]] )        
+</div>
+
+<x-jet-section-border />
 <!-- End Subscriptions -->
 
 <!-- Receipts -->

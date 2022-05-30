@@ -103,7 +103,7 @@ class Payfast implements PaymentGateway
      *
      * https://developers.payfast.co.za/docs#onsite_payments
      */
-    public function createOnsitePayment($planId, $billingDate = null, $cycles = 0)
+    public function createOnsitePayment($planId, $billingDate = null, $mergeFields = [], $cycles = 0)
     {
         $plan = config('payfast.plans')[$planId];
 
@@ -123,14 +123,15 @@ class Payfast implements PaymentGateway
             'custom_int1' => Auth::user()->getKey(),
             'custom_int2' => $planId,
             'custom_str2' => $plan['name'],
-            'item_name' => config('app.name') . " $recurringType Subscription",
-            'name_first' => Auth::user()->first_name,
-            'name_last' => Auth::user()->last_name,
-            'item_description' => "Access to the Best Agent Rankings Website for " . Auth::user()->first_name . ' '  . Auth::user()->last_name,
+            'item_name' => config('app.name') . " $recurringType Subscription",            
             'email_address' => Auth::user()->email,
         ];
 
         $data = array_merge($data, $this->urlCollection);
+
+        if ($mergeFields) {
+            $data = array_merge($data, $mergeFields);
+        }
 
         $message = "The callback URL defined in createOnsitePayment is " . $data['notify_url'];
 
@@ -145,16 +146,11 @@ class Payfast implements PaymentGateway
         Log::debug($data);
 
         ray($data)->orange();
-
-        // Generate payment identifier
+        
         $identifier = $this->payment->onsite->generatePaymentIdentifier($data);
-
+        
         if ($identifier !== null) {
-            return $identifier;
-            // $html = '<html><head><script src="https://www.payfast.co.za/onsite/engine.js"></script><body>';
-            // echo $html;
-            echo '<script type="text/javascript">window.payfast_do_onsite_payment({"uuid":"'.$identifier.'"});</script>';
-            // echo "</body></html>";
+            return $identifier;            
         }
     }
 
