@@ -19,7 +19,7 @@ $array = [
     'name_first' => null,
     'name_last' => null,
     'email_address' => 'eugene@vander.host',
-    'merchant_id' => '13741656',
+    'merchant_id' => '10004002',
     'token' => '50ad36e9-22a3-47fe-8385-5677e49ee025',
     'signature' => '91d6b4f2edfacbd68b126719ea16cc34',
 ];

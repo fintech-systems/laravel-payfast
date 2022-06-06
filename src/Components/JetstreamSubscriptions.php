@@ -53,7 +53,7 @@ class JetstreamSubscriptions extends Component
      */
     public function updateCard()
     {
-        $token = $this->user->activeSubscription()->token;
+        $token = $this->user->subscription('default')->token;
 
         $url = "https://www.payfast.co.za/eng/recurring/update/$token?return=" . config('app.url') . "/user/profile?card_updated=true";
 

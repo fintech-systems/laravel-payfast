@@ -56,16 +56,16 @@ class PayfastServiceProvider extends ServiceProvider
             'card_updated_return_url' => config('payfast.card_updated_return_url'),
         ]));
 
-        $this->app->bind('payfast-api', function ($app) {
-            ray('Binding 3rd party API to the PayFast API');
+        // $this->app->bind('payfast-api', function ($app) {
+        //     ray('Binding 3rd party API to the PayFast API');
 
-            $client = new PayFastApi([
-                    'merchantId' => config('payfast.merchant_id'),
-                    'passPhrase' => config('payfast.passphrase'),
-                    'testMode' => config('payfast.testmode'),
-            ]);
+        //     $client = new PayFastApi([
+        //             'merchantId' => config('payfast.merchant_id'),
+        //             'passPhrase' => config('payfast.passphrase'),
+        //             'testMode' => config('payfast.testmode'),
+        //     ]);
 
-            return new FintechSystemsPayFastApi($client);
-        });
+        //     return new FintechSystemsPayFastApi($client);
+        // });
     }
 }

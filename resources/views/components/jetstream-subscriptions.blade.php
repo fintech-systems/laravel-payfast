@@ -39,7 +39,7 @@
                 {{-- Grace period --}}
                     <h3 class="text-lg font-medium text-gray-900">
                         Your subscription was cancelled
-                        {{ $user->subscription('default')->ends_at ?? 'error' }}.
+                        {{ $user->subscription('default')->cancelled_at->format('Y-m-d H:i:s') }}.
                     </h3>
                     <div class="mt-3 max-w-xl text-sm text-gray-600">
                         @if (\Carbon\Carbon::now()->diffInDays(
@@ -66,7 +66,7 @@
                     <div class="mt-3 max-w-xl text-sm text-gray-600">
                         <p>
                             The next payment is due
-                            {{ $user->subscriptions()->active()->first()->next_bill_at->format('Y-m-d') ?? 'error' }}.
+                            {{ $user->subscriptions()->active()->first()->next_bill_at->format('Y-m-d') }}.
                         </p>
                     </div>
                 @endif        

@@ -27,10 +27,9 @@ class SubscriptionsTest extends FeatureTestCase
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'token' => 244,
+            'payfast_token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_ACTIVE,
-            'merchant_payment_id' => 'random',
+            'payfast_status' => Subscription::STATUS_ACTIVE,
         ]);
 
         $this->assertTrue($billable->subscribed('main'));
@@ -54,7 +53,7 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_they_are_on_a_generic_trial()
     {
-        $billable = $this->createBillable('eugene', ['trial_ends_at' => Carbon::tomorrow()]);
+        $billable = $this->createBillable('taylor', ['trial_ends_at' => Carbon::tomorrow()]);
 
         $this->assertTrue($billable->onGenericTrial());
         $this->assertTrue($billable->onTrial());
@@ -64,15 +63,14 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_their_subscription_is_on_trial()
     {
-        $billable = $this->createBillable('eugene');
+        $billable = $this->createBillable('taylor');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'token' => 244,
+            'payfast_token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_TRIALING,
+            'payfast_status' => Subscription::STATUS_TRIALING,
             'trial_ends_at' => Carbon::tomorrow(),
-            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertTrue($billable->subscribed('main'));
@@ -99,15 +97,14 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_their_subscription_is_cancelled()
     {
-        $billable = $this->createBillable('eugene');
+        $billable = $this->createBillable('taylor');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'token' => 244,
+            'payfast_token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_CANCELLED,
+            'payfast_status' => Subscription::STATUS_DELETED,
             'ends_at' => Carbon::tomorrow(),
-            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertTrue($subscription->valid());
@@ -122,15 +119,14 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_the_grace_period_is_over()
     {
-        $billable = $this->createBillable('eugene');
+        $billable = $this->createBillable('taylor');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'token' => 244,
+            'payfast_token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_CANCELLED,
+            'payfast_status' => Subscription::STATUS_DELETED,
             'ends_at' => Carbon::yesterday(),
-            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertFalse($subscription->valid());
@@ -145,14 +141,13 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_customers_can_check_if_the_subscription_is_paused()
     {
-        $billable = $this->createBillable('eugene');
+        $billable = $this->createBillable('taylor');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'token' => 244,
+            'payfast_token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_PAUSED,
-            'merchant_payment_id' => 'random',
+            'payfast_status' => Subscription::STATUS_PAUSED,
         ]);
 
         $this->assertFalse($subscription->valid());
@@ -167,15 +162,14 @@ class SubscriptionsTest extends FeatureTestCase
 
     public function test_subscriptions_can_be_on_a_paused_grace_period()
     {
-        $billable = $this->createBillable('eugene');
+        $billable = $this->createBillable('taylor');
 
         $subscription = $billable->subscriptions()->create([
             'name' => 'main',
-            'token' => 244,
+            'payfast_token' => 244,
             'plan_id' => 2323,
-            'status' => Subscription::STATUS_ACTIVE,
+            'payfast_status' => Subscription::STATUS_ACTIVE,
             'paused_from' => Carbon::tomorrow(),
-            'merchant_payment_id' => 'random',
         ]);
 
         $this->assertTrue($subscription->valid());
@@ -188,16 +182,49 @@ class SubscriptionsTest extends FeatureTestCase
         $this->assertFalse($subscription->ended());
     }
 
-    // Unfortunately I can't get this test working. If I could get it right it could change the course of
-    // testing because then I can simulate API responses. Not sure if the original was based on having an
-    // actual live subscription at PayFast, but nevertheless, we could actually do something like that.
-    // public function test_fetching_a_subscription()
-    // {
-    //     $response = Http::response(['status' => 'success']);
+    public function test_subscriptions_can_fetch_their_subscription_info()
+    {
+        $billable = $this->createBillable('taylor');
 
-    //     Http::fake(['api.payfast.co.za/*' => $response]);
+        $subscription = $billable->subscriptions()->create([
+            'name' => 'main',
+            'payfast_token' => 244,
+            'plan_id' => 2323,
+            'payfast_status' => Subscription::STATUS_ACTIVE,
+        ]);
 
-    //     // $this->assertEquals(['status' => 'success'], PayFastApi::fetchSubscription('d19702d6-702f-4d87-ab5f-6b538a29d5ff'));
-    //     $this->assertEquals(['status' => 'success'], PayFastApi::fetchSubscription('2338b2c3-e760-46f9-a2f8-3ac2173f97a4'));
-    // }
+        Http::fake([
+            // 'https://www.payfast.co.za/eng/process' => Http::response([
+            'https://api.payfast.co.za*' => Http::response([
+                'code' => 200,
+                'status' => "success",
+                'data' => [
+                    'response' => [
+                        [
+                            'amount' => 599,
+                            'cycles' => 0,
+                            'cycles_complete' => 1,
+                            'frequency' => 3,
+                            'run_date' => "2022-06-29T00:00:00+02:00",
+                            'status' => 1,
+                            'status_reason' => "ACTIVE",
+                            'token' => 244,
+                        ],
+                    ],
+                ]
+            ]),
+        ]);
+
+        $result = Payfast::fetchSubscription($subscription->payfast_token);
+
+        ray($result);
+    
+        $this->assertSame('244', $subscription->payfast_token);
+
+        // $this->assertSame('john@example.com', $subscription->paddleEmail());
+        // $this->assertSame('card', $subscription->paymentMethod());
+        // $this->assertSame('visa', $subscription->cardBrand());
+        // $this->assertSame('1234', $subscription->cardLastFour());
+        // $this->assertSame('04/2022', $subscription->cardExpirationDate());
+    }
 }

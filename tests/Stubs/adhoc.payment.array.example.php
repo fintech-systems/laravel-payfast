@@ -22,6 +22,6 @@ $array = [
     "name_first" => null,
     "name_last" => null,
     "email_address" => null,
-    "merchant_id" => "13741656",
+    "merchant_id" => "10004002",
     "signature" => "aba1635693fd5ac5c58385fa54f853f6",
 ];

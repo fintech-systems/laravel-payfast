@@ -58,7 +58,7 @@ class WebhookController extends Controller
                 return new Response('Webhook createSubscription/applySubscriptionPayment handled');
             }
 
-            if ($payload['payment_status'] == Subscription::PAYMENT_STATUS_CANCELLED) {
+            if ($payload['payment_status'] == Subscription::STATUS_DELETED) {
                 $this->cancelSubscription($payload);
                 WebhookHandled::dispatch($payload);
 
@@ -253,6 +253,12 @@ class WebhookController extends Controller
             throw new MissingSubscription();
         }
 
+        $message = "Looked for and found the subscription...";
+        Log::debug($message);
+        ray($message);
+
+        // ray($subscription);
+
         // Cancellation date...
         if (is_null($subscription->ends_at)) {
             $subscription->ends_at = $subscription->onTrial()
@@ -260,11 +266,19 @@ class WebhookController extends Controller
                 : $subscription->next_bill_at->subMinutes(1);
         }
 
+        // $message = "We've interpreted and possibly saved the ends_at date...";
+        // Log::debug($message);
+        // ray($message);
+
         $subscription->cancelled_at = now();
 
-        $subscription->payment_status = $payload['payment_status'];
+        $subscription->payfast_status = $payload['payment_status'];
 
         $subscription->paused_from = null;
+
+        // $message = "Now we're going to save information about the subscription...";
+        // Log::debug($message);
+        // ray($message);
 
         $subscription->save();
 
@@ -277,7 +291,7 @@ class WebhookController extends Controller
 
     private function findSubscription(string $subscriptionId)
     {
-        return Cashier::$subscriptionModel::firstWhere('token', $subscriptionId);
+        return Cashier::$subscriptionModel::firstWhere('payfast_token', $subscriptionId);
     }
 
     private function findOrCreateCustomer(array $passthrough)

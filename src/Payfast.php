@@ -27,14 +27,14 @@ class Payfast implements PaymentGateway
 
     public function __construct($client)
     {
-        $this->payment = new PayFastPayment(
-            [
-                'merchantId' => $client['merchant_id'],
-                'merchantKey' => $client['merchant_key'],
-                'passPhrase' => $client['passphrase'],
-                'testMode' => $client['testmode'],
-            ]
-        );
+        // $this->payment = new PayFastPayment(
+        //     [
+        //         'merchantId' => $client['merchant_id'],
+        //         'merchantKey' => $client['merchant_key'],
+        //         'passPhrase' => $client['passphrase'],
+        //         'testMode' => $client['testmode'],
+        //     ]
+        // );
 
         $this->api = new PayFastApi(
             [
